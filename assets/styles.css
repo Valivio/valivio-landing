@@ -219,3 +219,6 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
   margin-top: 12px;          /* odstęp od opisu */
   /* nie potrzeba margin:auto; centrowanie zrobi text-align:center rodzica */
 }
+
+/* DLA KOGO: ukryj nagłówek i opis, zostaw tylko boxy */
+#dla-kogo .section-head { display: none; }
