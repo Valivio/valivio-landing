@@ -9,13 +9,9 @@
   --radius: 14px;
   --maxw: 980px;
 
-  /* Kolory sekcji jako RGB (łatwo robić RGBA) */
-  --blue-rgb: 245,249,255; /* #f5f9ff */
-  --warm-rgb: 255,247,240; /* #fff7f0 */
-
-  /* Sterowanie przenikaniem */
-  --overlap: 160px;     /* ile sekcje nakładają się pionowo */
-  --center-boost: .40;  /* jak mocny kolor w środku sekcji */
+  /* kolory sekcji jako RGB (łatwiej sterować przezroczystością) */
+  --blue-rgb: 245,249,255; /* #f5f9ff – błękit */
+  --warm-rgb: 255,247,240; /* #fff7f0 – ciepły krem */
 }
 
 *{box-sizing:border-box}
@@ -70,68 +66,52 @@ header{position:sticky; top:0; z-index:10; background:rgba(255,255,255,0.85); ba
   .navlinks{order:3; width:100%; max-width:100%; padding-top:8px; border-top:1px solid var(--border)}
 }
 
-/* ================== Sekcje + przenikanie ================== */
-section{
-  position:relative;
-  z-index:0;
-  padding:56px 0;
-}
+/* Sections */
+section{padding:56px 0}
+.section-head{display:flex; align-items:end; justify-content:space-between; gap:20px; margin-bottom:18px}
+.section-head p{max-width:70ch; color:var(--muted)}
 
-/* wyłącz wcześniejsze „blend divy” jeśli są w HTML */
+/* Usuwamy stare blend-divy, jeśli były w HTML */
 .blend{display:none !important}
 
-/* Sekcje nachodzą na siebie: następna zachodzi na poprzednią o --overlap */
-section + section{
-  margin-top:calc(-1 * var(--overlap));
-}
-
-/* Dla sekcji tint zwiększamy padding, by zachować optyczny rytm po nałożeniu */
-.tint-blue, .tint-warm{
-  padding-top:calc(56px + var(--overlap));
-  padding-bottom:calc(56px + var(--overlap));
-}
-
-/* Miękkie wzmocnienie koloru w środku i pełna transparentność przy krawędziach.
-   Dzięki nałożeniu sekcji kolory REALNIE się mieszają bez linii. */
+/* Section tints – fade: biel -> kolor (środek) -> biel */
 .tint-blue{
   background:
-    /* łagodne „podbicie” środka sekcji */
+    /* subtelne podbicie koloru w środku */
     radial-gradient(120% 90% at 50% 45%,
-      rgba(var(--blue-rgb), var(--center-boost)) 0%,
-      rgba(var(--blue-rgb), .18) 55%,
+      rgba(var(--blue-rgb), .35) 0%,
+      rgba(var(--blue-rgb), .15) 55%,
       rgba(var(--blue-rgb), 0) 100%
     ),
-    /* pionowe przejście – brzegi do zera, środek mocniejszy */
+    /* główne przejście biel⇄błękit */
     linear-gradient(180deg,
-      rgba(var(--blue-rgb), 0)   0%,
+      rgba(255,255,255,1)        0%,
       rgba(var(--blue-rgb), .65) 22%,
-      rgba(var(--blue-rgb), .85) 50%,
+      rgba(var(--blue-rgb), .90) 50%,
       rgba(var(--blue-rgb), .65) 78%,
-      rgba(var(--blue-rgb), 0)   100%
-    ),
-    rgb(var(--blue-rgb));
+      rgba(255,255,255,1)        100%
+    );
 }
 
 .tint-warm{
   background:
     radial-gradient(120% 90% at 50% 45%,
-      rgba(var(--warm-rgb), var(--center-boost)) 0%,
-      rgba(var(--warm-rgb), .18) 55%,
+      rgba(var(--warm-rgb), .35) 0%,
+      rgba(var(--warm-rgb), .15) 55%,
       rgba(var(--warm-rgb), 0) 100%
     ),
     linear-gradient(180deg,
-      rgba(var(--warm-rgb), 0)   0%,
+      rgba(255,255,255,1)        0%,
       rgba(var(--warm-rgb), .60) 22%,
-      rgba(var(--warm-rgb), .82) 50%,
+      rgba(var(--warm-rgb), .85) 50%,
       rgba(var(--warm-rgb), .60) 78%,
-      rgba(var(--warm-rgb), 0)   100%
-    ),
-    rgb(var(--warm-rgb));
+      rgba(255,255,255,1)        100%
+    );
 }
 
-/* Nagłówki sekcji */
-.section-head{display:flex; align-items:end; justify-content:space-between; gap:20px; margin-bottom:18px}
-.section-head p{max-width:70ch; color:var(--muted)}
+/* Hero */
+.hero{padding:72px 0 28px}
+.hero .cta{display:flex; gap:12px; flex-wrap:wrap; margin-top:24px}
 
 /* Buttons */
 .btn{display:inline-flex; align-items:center; gap:.6rem; border-radius:999px; padding:.9rem 1.15rem; font-weight:700; border:1px solid #000; background:#000; color:#fff}
