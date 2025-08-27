@@ -8,9 +8,14 @@
   --primary: #000000;
   --radius: 14px;
   --maxw: 980px;
-  --tint-blue: #f5f9ff; /* jasny błękit */
-  --tint-warm: #fff7f0; /* ciepły krem */
-  --blend-size: 120px;  /* <- wydłużony blend (zmień tu, jeśli chcesz inaczej) */
+
+  /* Kolory sekcji jako RGB (łatwo robić RGBA) */
+  --blue-rgb: 245,249,255; /* #f5f9ff */
+  --warm-rgb: 255,247,240; /* #fff7f0 */
+
+  /* Sterowanie przenikaniem */
+  --overlap: 160px;     /* ile sekcje nakładają się pionowo */
+  --center-boost: .40;  /* jak mocny kolor w środku sekcji */
 }
 
 *{box-sizing:border-box}
@@ -65,69 +70,68 @@ header{position:sticky; top:0; z-index:10; background:rgba(255,255,255,0.85); ba
   .navlinks{order:3; width:100%; max-width:100%; padding-top:8px; border-top:1px solid var(--border)}
 }
 
-/* Sections */
-section{padding:56px 0}
-.section-head{display:flex; align-items:end; justify-content:space-between; gap:20px; margin-bottom:18px}
-.section-head p{max-width:70ch; color:var(--muted)}
-
-/* Smooth transitions between sections */
-.blend{
-  height:var(--blend-size);
-  background:linear-gradient(to bottom, var(--from) 0%, var(--to) 100%);
-}
-/* delikatniejsze mieszanie kolorów tam, gdzie jest wsparcie color-mix */
-@supports (color: color-mix(in oklab, black, white)) {
-  .blend{
-    background:linear-gradient(
-      to bottom,
-      var(--from) 0%,
-      color-mix(in oklab, var(--from) 70%, var(--to) 30%) 35%,
-      color-mix(in oklab, var(--from) 30%, var(--to) 70%) 65%,
-      var(--to) 100%
-    );
-  }
+/* ================== Sekcje + przenikanie ================== */
+section{
+  position:relative;
+  z-index:0;
+  padding:56px 0;
 }
 
-/* Section tints (z miękkim wzmocnieniem koloru w środku sekcji) */
+/* wyłącz wcześniejsze „blend divy” jeśli są w HTML */
+.blend{display:none !important}
+
+/* Sekcje nachodzą na siebie: następna zachodzi na poprzednią o --overlap */
+section + section{
+  margin-top:calc(-1 * var(--overlap));
+}
+
+/* Dla sekcji tint zwiększamy padding, by zachować optyczny rytm po nałożeniu */
+.tint-blue, .tint-warm{
+  padding-top:calc(56px + var(--overlap));
+  padding-bottom:calc(56px + var(--overlap));
+}
+
+/* Miękkie wzmocnienie koloru w środku i pełna transparentność przy krawędziach.
+   Dzięki nałożeniu sekcji kolory REALNIE się mieszają bez linii. */
 .tint-blue{
-  --blue-strong: #e9f2ff; /* odcień nieco mocniejszy */
   background:
-    /* „poducha” koloru w środku sekcji */
+    /* łagodne „podbicie” środka sekcji */
     radial-gradient(120% 90% at 50% 45%,
-      var(--blue-strong) 0%,
-      rgba(233,242,255,.70) 40%,
-      rgba(233,242,255,.25) 70%,
-      rgba(233,242,255,0) 100%
+      rgba(var(--blue-rgb), var(--center-boost)) 0%,
+      rgba(var(--blue-rgb), .18) 55%,
+      rgba(var(--blue-rgb), 0) 100%
     ),
-    /* lekki vertical lift */
+    /* pionowe przejście – brzegi do zera, środek mocniejszy */
     linear-gradient(180deg,
-      rgba(233,242,255,0) 0%,
-      rgba(233,242,255,.25) 50%,
-      rgba(233,242,255,0) 100%
+      rgba(var(--blue-rgb), 0)   0%,
+      rgba(var(--blue-rgb), .65) 22%,
+      rgba(var(--blue-rgb), .85) 50%,
+      rgba(var(--blue-rgb), .65) 78%,
+      rgba(var(--blue-rgb), 0)   100%
     ),
-    var(--tint-blue);
+    rgb(var(--blue-rgb));
 }
 
 .tint-warm{
-  --warm-strong: #ffeedf; /* odcień nieco mocniejszy */
   background:
     radial-gradient(120% 90% at 50% 45%,
-      var(--warm-strong) 0%,
-      rgba(255,238,223,.70) 40%,
-      rgba(255,238,223,.25) 70%,
-      rgba(255,238,223,0) 100%
+      rgba(var(--warm-rgb), var(--center-boost)) 0%,
+      rgba(var(--warm-rgb), .18) 55%,
+      rgba(var(--warm-rgb), 0) 100%
     ),
     linear-gradient(180deg,
-      rgba(255,238,223,0) 0%,
-      rgba(255,238,223,.25) 50%,
-      rgba(255,238,223,0) 100%
+      rgba(var(--warm-rgb), 0)   0%,
+      rgba(var(--warm-rgb), .60) 22%,
+      rgba(var(--warm-rgb), .82) 50%,
+      rgba(var(--warm-rgb), .60) 78%,
+      rgba(var(--warm-rgb), 0)   100%
     ),
-    var(--tint-warm);
+    rgb(var(--warm-rgb));
 }
 
-/* Hero */
-.hero{padding:72px 0 28px}
-.hero .cta{display:flex; gap:12px; flex-wrap:wrap; margin-top:24px}
+/* Nagłówki sekcji */
+.section-head{display:flex; align-items:end; justify-content:space-between; gap:20px; margin-bottom:18px}
+.section-head p{max-width:70ch; color:var(--muted)}
 
 /* Buttons */
 .btn{display:inline-flex; align-items:center; gap:.6rem; border-radius:999px; padding:.9rem 1.15rem; font-weight:700; border:1px solid #000; background:#000; color:#fff}
