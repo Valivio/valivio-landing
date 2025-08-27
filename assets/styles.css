@@ -198,3 +198,13 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
   max-width:68ch;         /* lepsza czytelność dłuższego zdania */
   color:var(--muted);
 }
+
+/* CTA w kartach cennika: zielony akcent + pozycjonowanie na środku */
+.card .btn{
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  display: inline-flex;
+  margin: 12px auto 0;   /* wyśrodkowanie w boxie */
+}
+.card .btn:hover{ filter: saturate(110%); }
