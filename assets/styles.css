@@ -10,6 +10,7 @@
   --maxw: 980px;
   --tint-blue: #f5f9ff; /* jasny błękit */
   --tint-warm: #fff7f0; /* ciepły krem */
+  --blend-size: 120px;  /* <- wydłużony blend (zmień tu, jeśli chcesz inaczej) */
 }
 
 *{box-sizing:border-box}
@@ -70,11 +71,59 @@ section{padding:56px 0}
 .section-head p{max-width:70ch; color:var(--muted)}
 
 /* Smooth transitions between sections */
-.blend{height:56px; background:linear-gradient(to bottom, var(--from), var(--to));}
+.blend{
+  height:var(--blend-size);
+  background:linear-gradient(to bottom, var(--from) 0%, var(--to) 100%);
+}
+/* delikatniejsze mieszanie kolorów tam, gdzie jest wsparcie color-mix */
+@supports (color: color-mix(in oklab, black, white)) {
+  .blend{
+    background:linear-gradient(
+      to bottom,
+      var(--from) 0%,
+      color-mix(in oklab, var(--from) 70%, var(--to) 30%) 35%,
+      color-mix(in oklab, var(--from) 30%, var(--to) 70%) 65%,
+      var(--to) 100%
+    );
+  }
+}
 
-/* Section tints (bez obrysów, żeby nie było twardej krawędzi) */
-.tint-blue{background:var(--tint-blue)}
-.tint-warm{background:var(--tint-warm)}
+/* Section tints (z miękkim wzmocnieniem koloru w środku sekcji) */
+.tint-blue{
+  --blue-strong: #e9f2ff; /* odcień nieco mocniejszy */
+  background:
+    /* „poducha” koloru w środku sekcji */
+    radial-gradient(120% 90% at 50% 45%,
+      var(--blue-strong) 0%,
+      rgba(233,242,255,.70) 40%,
+      rgba(233,242,255,.25) 70%,
+      rgba(233,242,255,0) 100%
+    ),
+    /* lekki vertical lift */
+    linear-gradient(180deg,
+      rgba(233,242,255,0) 0%,
+      rgba(233,242,255,.25) 50%,
+      rgba(233,242,255,0) 100%
+    ),
+    var(--tint-blue);
+}
+
+.tint-warm{
+  --warm-strong: #ffeedf; /* odcień nieco mocniejszy */
+  background:
+    radial-gradient(120% 90% at 50% 45%,
+      var(--warm-strong) 0%,
+      rgba(255,238,223,.70) 40%,
+      rgba(255,238,223,.25) 70%,
+      rgba(255,238,223,0) 100%
+    ),
+    linear-gradient(180deg,
+      rgba(255,238,223,0) 0%,
+      rgba(255,238,223,.25) 50%,
+      rgba(255,238,223,0) 100%
+    ),
+    var(--tint-warm);
+}
 
 /* Hero */
 .hero{padding:72px 0 28px}
