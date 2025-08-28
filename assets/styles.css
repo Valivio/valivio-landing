@@ -265,3 +265,23 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
 #oferta .card .price{
   text-align:center;
 }
+
+/* === OFERTA: równy start listy pod tytułem we wszystkich kartach === */
+/* h3 już ma min-wysokość (2 linie) – teraz pilnujemy opisu (2 linie) */
+#oferta .card .meta:nth-of-type(2){
+  --lines: 2;
+  line-height: 1.45;                          /* spójny rytm */
+  min-height: calc(var(--lines) * 1em * 1.45);/* rezerwuje miejsce na 2 linie */
+  margin-top: 6px;                             /* lekki oddech pod h3 */
+}
+
+/* Na wąskich ekranach zwiększamy bufor, bo tytuły częściej się łamią */
+@media (max-width: 680px){
+  #oferta .card .h3{ --lines: 3; }            /* już miałeś to wcześniej – zostawiamy */
+  #oferta .card .meta:nth-of-type(2){ --lines: 3; }
+}
+
+/* Dodatkowo: standaryzujemy odstępy wokół listy */
+#oferta .card ul{
+  margin-top: 12px;
+}
