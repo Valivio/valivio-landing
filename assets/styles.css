@@ -222,3 +222,35 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
 
 /* DLA KOGO: ukryj nagłówek i opis, zostaw tylko boxy */
 #dla-kogo .section-head { display: none; }
+
+/* === OFERTA: spójny układ kart i równy start treści pod tytułem === */
+#oferta .row.cols-3{ align-items: stretch; }   /* wszystkie karty tej samej wysokości w wierszu */
+#oferta .card{ display:flex; flex-direction:column; }
+
+/* Ustal minimalną wysokość tytułu na 2 linie – wtedy opis poniżej zacznie się równo we wszystkich kartach.
+   Na bardzo wąskich ekranach zwiększamy do 3 linii (częstsze łamanie tekstu). */
+#oferta .card .h3{
+  --lines: 2;
+  line-height: 1.25;
+  min-height: calc(var(--lines) * 1em * 1.25);
+  margin-top: 2px; /* drobny optyczny balans */
+}
+@media (max-width: 680px){
+  #oferta .card .h3{ --lines: 3; }
+}
+
+/* Delikatne ujednolicenie odstępów w obrębie kart */
+#oferta .card .meta:first-of-type{ margin-bottom: 8px; } /* „Wejście/Popularne/Kariera” */
+#oferta .card ul{ margin-top: 12px; }
+#oferta .card .price{ margin-top: 16px; }
+
+/* CTA w kartach – wyśrodkowane i w zielonym akcencie (spójne z top nav) */
+#oferta .card .btn{
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  display: inline-flex;
+  align-self: center;      /* centrum w osi poziomej w karcie */
+  margin-top: 12px;
+}
+#oferta .card .btn:hover{ filter: saturate(110%); }
