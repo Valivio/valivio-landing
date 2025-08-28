@@ -254,3 +254,14 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
   margin-top: 12px;
 }
 #oferta .card .btn:hover{ filter: saturate(110%); }
+
+/* OFERTA: wyśrodkuj „Wejście/Popularne/Kariera” oraz cenę */
+#oferta .card .meta:first-of-type{
+  display:block;          /* żeby zadziałało centrowanie */
+  text-align:center;
+  margin-bottom:8px;      /* drobny oddech nad h3 */
+}
+
+#oferta .card .price{
+  text-align:center;
+}
