@@ -157,3 +157,27 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
   }
   .navlinks a{ flex: 0 0 auto; } /* stabilne odstępy między linkami */
 }
+
+/* DLA KOGO: h3 = dokładnie 2 linie + 1 linia przerwy, opis startuje równo */
+#dla-kogo .card{
+  display:flex;
+  flex-direction:column;
+}
+
+#dla-kogo .card .h3{
+  /* 2 linie wysokości, z przycięciem jeśli dłuższe */
+  --lh: 1.25;
+  line-height: var(--lh);
+  min-height: calc(2 * 1em * var(--lh));
+  max-height: calc(2 * 1em * var(--lh));
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0; /* reset */
+}
+
+/* 1 linia odstępu pod nagłówkiem */
+#dla-kogo .card .meta{
+  margin-top: calc(1em * 1.25); /* = 1 linia wysokości nagłówka */
+}
