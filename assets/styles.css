@@ -328,3 +328,38 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
   padding-top: 56px; /* odsuwa od sticky headera */
   text-align:center;
 }
+/* === HERO: -20% wysokości + czarny tekst na zdjęciu === */
+.hero-bleed{
+  /* było: clamp(360px, 56vh, 640px) */
+  min-height: clamp(320px, 45vh, 520px);
+}
+.hero-bleed .hero-img{
+  /* było: clamp(360px, 56vh, 640px) */
+  max-height: clamp(320px, 45vh, 520px);
+}
+
+/* 100% czarny tekst w obrębie hero */
+.hero-bleed .hero-content,
+.hero-bleed .hero-title,
+.hero-bleed .hero-lead,
+.hero-bleed .eyebrow {
+  color: #000;
+}
+.hero-bleed a { color:#000; }
+
+/* mocniejszy, jaśniejszy scrim dla kontrastu na dowolnym zdjęciu */
+.hero-bleed::after{
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,.82) 0%,
+    rgba(255,255,255,.60) 35%,
+    rgba(255,255,255,.60) 65%,
+    rgba(255,255,255,.82) 100%
+  );
+}
+
+/* drobny tuning na bardzo małych ekranach */
+@media (max-width: 420px){
+  .hero-bleed{ min-height: clamp(300px, 42vh, 480px); }
+  .hero-bleed .hero-img{ max-height: clamp(300px, 42vh, 480px); }
+}
