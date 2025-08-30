@@ -181,3 +181,10 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
 #dla-kogo .card .meta{
   margin-top: calc(1em * 1.25); /* = 1 linia wysokości nagłówka */
 }
+
+/* Anchor offset pod sticky header – pełna widoczność tytułów sekcji */
+:root{ --anchor-offset: 84px; }          /* desktop/tablet */
+@media (max-width: 720px){
+  :root{ --anchor-offset: 120px; }       /* mobile – header zwykle wyższy */
+}
+section[id]{ scroll-margin-top: var(--anchor-offset); }
