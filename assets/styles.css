@@ -285,3 +285,46 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
 #oferta .card ul{
   margin-top: 12px;
 }
+
+/* === HERO z pełną szerokością obrazu (full-bleed) === */
+.hero-bleed{
+  position: relative;
+  isolation: isolate;               /* pewny layering overlaya */
+  min-height: clamp(360px, 56vh, 640px);
+}
+
+/* Obraz na pełną szerokość okna, bez „krawędzi” kontenera */
+.hero-bleed .hero-img{
+  display:block;
+  width: 100vw;
+  height: 100%;
+  max-height: clamp(360px, 56vh, 640px);
+  object-fit: cover;
+  object-position: center;
+  /* trik, by rozciągnąć IMG poza .container */
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+/* Subtelny biały scrim, żeby czarny tekst był czytelny na dowolnym zdjęciu */
+.hero-bleed::after{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,.70) 0%,
+    rgba(255,255,255,.45) 35%,
+    rgba(255,255,255,.45) 65%,
+    rgba(255,255,255,.70) 100%
+  );
+  pointer-events:none;
+}
+
+/* Treść na środku obrazu (w pionie i poziomie), z oddechem pod sticky nagłówkiem */
+.hero-bleed .hero-content{
+  position:absolute; inset:0;
+  display:grid;
+  place-content:center;
+  padding-top: 56px; /* odsuwa od sticky headera */
+  text-align:center;
+}
