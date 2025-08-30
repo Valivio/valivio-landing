@@ -439,3 +439,12 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
 .hero-bleed .hero-title,
 .hero-bleed .hero-lead,
 .hero-bleed .hero-lead strong { color: #000; }
+
+/* HERO: ~7% jaśniejszy od #000 */
+.hero-bleed .eyebrow,
+.hero-bleed .hero-title,
+.hero-bleed .hero-lead,
+.hero-bleed .hero-lead strong {
+  /* 93% krycia czerni ≈ -7% „czerni” wizualnie */
+  color: rgba(0,0,0,.93);
+}
