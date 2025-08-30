@@ -1,39 +1,20 @@
 :root{
-  --bg: #ffffff;
-  --paper: #ffffff;
-  --text: #111111;
-  --muted: #555555;
-  --link: #06c;
-  --border: #e6e6e6;
-  --primary: #000000;
-  --radius: 14px;
-  --maxw: 980px;
-
-  /* kolory sekcji jako RGB (łatwiej sterować przezroczystością) */
-  --blue-rgb: 245,249,255; /* #f5f9ff – błękit */
-  --warm-rgb: 255,247,240; /* #fff7f0 – ciepły krem */
-
-  /* akcent (przycisk „Umów konsultację”) */
-  --accent: #34c759;      /* ciepła iOS-owa zieleń */
-  --accent-ink: #ffffff;  /* kolor tekstu na akcencie */
+  --bg:#fff; --paper:#fff; --text:#111; --muted:#555; --link:#06c; --border:#e6e6e6;
+  --radius:14px; --maxw:980px;
+  --blue-rgb:245,249,255;  /* #f5f9ff */
+  --warm-rgb:255,247,240;  /* #fff7f0 */
+  --accent:#34c759; --accent-ink:#fff; /* zielony akcent */
 }
 
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,system-ui,sans-serif;
-  color:var(--text);
-  background:var(--bg);
-  line-height:1.6;
+  margin:0; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,system-ui,sans-serif;
+  color:var(--text); background:var(--bg); line-height:1.6;
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
 }
-
 img{max-width:100%; display:block}
-
-/* Links */
-a{color:var(--link); text-decoration:none}
-a:hover{text-decoration:underline}
+a{color:var(--link); text-decoration:none} a:hover{text-decoration:underline}
 
 /* Layout */
 .container{max-width:var(--maxw); margin-inline:auto; padding-inline:20px}
@@ -43,118 +24,82 @@ a:hover{text-decoration:underline}
 @media (max-width:960px){.row.cols-3{grid-template-columns:1fr 1fr}}
 @media (max-width:680px){.row.cols-3,.row.cols-2{grid-template-columns:1fr}}
 
-/* Type scale */
 .h1{font-size:clamp(36px,5vw,56px); line-height:1.1; letter-spacing:-.02em; margin:0}
 .h2{font-size:clamp(28px,3.5vw,36px); line-height:1.15; letter-spacing:-.01em; margin:0}
 .h3{font-size:clamp(20px,2.2vw,22px); line-height:1.25; margin:0}
 .eyebrow{font-size:14px; letter-spacing:.08em; text-transform:uppercase; color:#6b7280}
 .lead{font-size:clamp(16px,1.6vw,20px); color:#333; max-width:70ch}
 
-/* Navigation (mobile-safe, no hamburger) */
-header{position:sticky; top:0; z-index:10; background:rgba(255,255,255,0.85); backdrop-filter:saturate(140%) blur(8px)}
+/* NAV */
+header{position:sticky; top:0; z-index:10; background:rgba(255,255,255,.85); backdrop-filter:saturate(140%) blur(8px)}
 .nav{display:flex; gap:12px; align-items:center; justify-content:space-between; padding:14px 0; flex-wrap:nowrap}
-
-/* +20% dla brandu i znaku „V” */
 .brand{display:flex; align-items:center; gap:10px; font-weight:700; font-size:1.2rem}
 .brand .mark{width:31px;height:31px;border-radius:8px;display:grid;place-items:center;border:1px solid var(--border)}
-
-/* Linki w menu: +20% rozmiaru i większy odstęp */
 .navlinks{display:flex; gap:20px; align-items:center; overflow-x:auto; -webkit-overflow-scrolling:touch; white-space:nowrap; scrollbar-width:none; max-width:60vw}
 .navlinks::-webkit-scrollbar{display:none}
 .navlinks a{color:#111; opacity:.85; font-size:1.2rem}
 .navlinks a:hover{opacity:1}
-
-/* Zielony przycisk „Umów konsultację” */
 .navcta{
-  display:inline-flex; align-items:center; gap:.6rem;
-  border:1px solid var(--accent);
-  background:var(--accent);
-  color:var(--accent-ink);
-  padding:.6rem .95rem;
-  border-radius:999px; font-weight:600; flex:0 0 auto;
+  display:inline-flex; align-items:center; gap:.6rem; padding:.6rem .95rem; border-radius:999px; font-weight:600; flex:0 0 auto;
+  background:var(--accent); border:1px solid var(--accent); color:var(--accent-ink);
 }
-.navcta:hover{opacity:1; filter:saturate(110%)}
-.navcta:focus-visible{
-  outline:3px solid color-mix(in srgb, var(--accent) 60%, white 40%);
-  outline-offset:2px;
-}
-
+.navcta:hover{filter:saturate(110%)}
+.navcta:focus-visible{outline:3px solid color-mix(in srgb, var(--accent) 60%, white 40%); outline-offset:2px}
 @media (max-width:720px){
   .nav{flex-wrap:wrap; align-items:flex-start}
-  .brand{order:1}
-  .navcta{order:2; margin-left:auto}
+  .brand{order:1} .navcta{order:2; margin-left:auto}
   .navlinks{order:3; width:100%; max-width:100%; padding-top:8px; border-top:1px solid var(--border)}
 }
 
-/* Sections */
+/* SECTIONS */
 section{padding:56px 0}
-.section-head{display:flex; align-items:end; justify-content:space-between; gap:20px; margin-bottom:18px}
-.section-head p{max-width:70ch; color:var(--muted)}
+.section-head{display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px; margin-bottom:28px}
+.section-head p{max-width:68ch; color:var(--muted)}
 
-/* Wyłącz stare blend-divy, jeśli są w HTML */
-.blend{display:none !important}
-
-/* Section tints – fade: biel -> kolor (środek) -> biel, +5% intensywniej */
+/* Tła sekcyjne – fade: biel -> kolor (środek) -> biel, lekko mocniejsze (~+5%) */
 .tint-blue{
   background:
-    radial-gradient(120% 90% at 50% 45%,
-      rgba(var(--blue-rgb), .37) 0%,   /* było .35 */
-      rgba(var(--blue-rgb), .16) 55%,  /* było .15 */
-      rgba(var(--blue-rgb), 0)   100%
-    ),
-    linear-gradient(180deg,
-      rgba(255,255,255,1)        0%,
-      rgba(var(--blue-rgb), .68) 22%,  /* było .65 */
-      rgba(var(--blue-rgb), .95) 50%,  /* było .90 */
-      rgba(var(--blue-rgb), .68) 78%,  /* było .65 */
-      rgba(255,255,255,1)        100%
-    );
+    radial-gradient(120% 90% at 50% 45%, rgba(var(--blue-rgb),.37) 0%, rgba(var(--blue-rgb),.16) 55%, rgba(var(--blue-rgb),0) 100%),
+    linear-gradient(180deg, #fff 0%, rgba(var(--blue-rgb),.68) 22%, rgba(var(--blue-rgb),.95) 50%, rgba(var(--blue-rgb),.68) 78%, #fff 100%);
 }
 .tint-warm{
   background:
-    radial-gradient(120% 90% at 50% 45%,
-      rgba(var(--warm-rgb), .37) 0%,   /* było .35 */
-      rgba(var(--warm-rgb), .16) 55%,  /* było .15 */
-      rgba(var(--warm-rgb), 0)   100%
-    ),
-    linear-gradient(180deg,
-      rgba(255,255,255,1)        0%,
-      rgba(var(--warm-rgb), .63) 22%,  /* było .60 */
-      rgba(var(--warm-rgb), .90) 50%,  /* było .85 */
-      rgba(var(--warm-rgb), .63) 78%,  /* było .60 */
-      rgba(255,255,255,1)        100%
-    );
+    radial-gradient(120% 90% at 50% 45%, rgba(var(--warm-rgb),.37) 0%, rgba(var(--warm-rgb),.16) 55%, rgba(var(--warm-rgb),0) 100%),
+    linear-gradient(180deg, #fff 0%, rgba(var(--warm-rgb),.63) 22%, rgba(var(--warm-rgb),.90) 50%, rgba(var(--warm-rgb),.63) 78%, #fff 100%);
 }
 
-/* Hero */
+/* HERO z obrazem (full-bleed) */
+.hero-bleed{position:relative; isolation:isolate; min-height:clamp(320px,45vh,520px)}
+.hero-bleed .hero-img{
+  position:absolute; inset:0; z-index:0; width:100%; height:100%;
+  object-fit:cover; object-position:50% 40%;
+}
+.hero-bleed::after{
+  content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:linear-gradient(to bottom, rgba(255,255,255,.82) 0%, rgba(255,255,255,.60) 35%, rgba(255,255,255,.60) 65%, rgba(255,255,255,.82) 100%);
+}
+.hero-bleed .hero-content{
+  position:absolute; inset:0; z-index:2; display:grid; place-content:center; padding-top:56px; text-align:center;
+}
+/* Kolor tekstu w hero ~93% czerni */
+.hero-bleed .eyebrow,
+.hero-bleed .hero-title,
+.hero-bleed .hero-lead,
+.hero-bleed .hero-lead strong{color:rgba(0,0,0,.93)}
+
+/* HERO typografia */
 .hero{padding:72px 0 28px}
 .hero .cta{display:flex; gap:12px; flex-wrap:wrap; margin-top:24px}
+.hero-title{max-width:28ch; margin:0 auto; letter-spacing:-.02em; text-align:center}
+.hero-title .arrow{opacity:.5; margin:0 .6ch}
+.hero-lead{max-width:62ch; margin:16px auto 0; text-align:center}
+@media (max-width:420px){ .hero-title{max-width:22ch} .hero-lead{max-width:66vw} }
 
-/* HERO: tytuł ze strzałkami + perfekcyjne wyśrodkowanie leada */
-.hero-title { 
-  max-width: 28ch;
-  margin: 0 auto;
-  letter-spacing: -0.02em;
-  text-align: center;
-}
-.hero-title .arrow { opacity: .5; margin: 0 .6ch; }
-.hero-lead {
-  max-width: 62ch;
-  margin: 16px auto 0;
-  text-align: center;
-}
-
-@media (max-width: 420px) {
-  .hero-title { max-width: 22ch; }
-  .hero-lead  { max-width: 66vw; }
-}
-
-/* Buttons (ogólne) */
+/* KOMPONENTY */
 .btn{display:inline-flex; align-items:center; gap:.6rem; border-radius:999px; padding:.9rem 1.15rem; font-weight:700; border:1px solid #000; background:#000; color:#fff}
 .btn:hover{opacity:.9; text-decoration:none}
 .btn.ghost{background:#fff; color:#111; border-color:#000}
 
-/* Cards */
 .card{background:var(--paper); border:1px solid var(--border); border-radius:var(--radius); padding:22px}
 .meta{color:var(--muted); font-size:.95rem}
 .price{font-weight:800; font-size:22px}
@@ -164,287 +109,36 @@ details{border:1px solid var(--border); border-radius:12px; padding:14px 16px}
 details+details{margin-top:10px}
 summary{cursor:pointer; font-weight:700}
 
-/* Form */
+/* FORM */
 form.card label{display:block; margin-top:8px}
-input, textarea{width:100%; padding:12px; border-radius:12px; background:#fff; border:1px solid var(--border); color:var(--text); margin-top:6px; margin-bottom:14px}
-input:focus, textarea:focus{outline:2px solid #0003; border-color:#000}
+input,textarea{
+  width:100%; padding:12px; border-radius:12px; background:#fff; border:1px solid var(--border); color:var(--text);
+  margin-top:6px; margin-bottom:14px
+}
+input:focus,textarea:focus{outline:2px solid #0003; border-color:#000}
 .form-row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
 
-/* Footer */
+/* FOOTER */
 footer{border-top:1px solid var(--border); padding:40px 0 64px}
 .fine{color:#666; font-size:.95rem}
 
-/* Helpers */
+/* OFERTA – spójne karty + wyśrodkowane kicker i cena + równy start listy */
+#oferta .row.cols-3{align-items:stretch}
+#oferta .card{display:flex; flex-direction:column}
+#oferta .card .h3{ --lines:2; line-height:1.25; min-height:calc(var(--lines)*1em*1.25); margin-top:2px }
+@media (max-width:680px){ #oferta .card .h3{ --lines:3 } }
+#oferta .card .meta:first-of-type{display:block; text-align:center; margin-bottom:8px}
+#oferta .card .price{text-align:center; margin-top:16px}
+#oferta .card .meta:nth-of-type(2){ --lines:2; line-height:1.45; min-height:calc(var(--lines)*1em*1.45); margin-top:6px }
+@media (max-width:680px){ #oferta .card .meta:nth-of-type(2){ --lines:3 } }
+#oferta .card ul{margin-top:12px}
+#oferta .card .btn{
+  background:var(--accent); border-color:var(--accent); color:var(--accent-ink);
+  display:inline-flex; align-self:center; margin-top:12px
+}
+#oferta .card .btn:hover{filter:saturate(110%)}
+
+/* HELPERS */
 .muted{color:var(--muted)}
 .mt-8{margin-top:8px} .mt-12{margin-top:12px} .mt-16{margin-top:16px} .mt-20{margin-top:20px} .mt-28{margin-top:28px} .mt-36{margin-top:36px}
 .center{text-align:center}
-
-/* === Sekcyjne nagłówki: tytuł i wprowadzenie wyśrodkowane === */
-.section-head{
-  display:flex;
-  flex-direction:column;
-  align-items:center;     /* środek w osi poziomej */
-  justify-content:flex-start;
-  text-align:center;      /* środek dla tekstu */
-  gap:12px;               /* odstęp między h2 a akapitem */
-  margin-bottom:28px;     /* więcej oddechu nad siatką kart */
-}
-
-.section-head h2{
-  margin:0;               /* pewność, że nie ciągnie layoutu */
-}
-
-.section-head p{
-  max-width:68ch;         /* lepsza czytelność dłuższego zdania */
-  color:var(--muted);
-}
-
-/* CTA w kartach cennika: zielony akcent + pozycjonowanie na środku */
-.card .btn{
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-ink);
-  display: inline-flex;
-  margin: 12px auto 0;   /* wyśrodkowanie w boxie */
-}
-.card .btn:hover{ filter: saturate(110%); }
-
-/* CENNIK: wyśrodkowany tekst i przycisk w boxach */
-#cennik .card{
-  text-align: center;        /* centruje h3, .price, .meta i inline elementy */
-}
-
-#cennik .card .btn{
-  display: inline-flex;      /* zachowuje wygląd przycisku */
-  margin-top: 12px;          /* odstęp od opisu */
-  /* nie potrzeba margin:auto; centrowanie zrobi text-align:center rodzica */
-}
-
-/* DLA KOGO: ukryj nagłówek i opis, zostaw tylko boxy */
-#dla-kogo .section-head { display: none; }
-
-/* === OFERTA: spójny układ kart i równy start treści pod tytułem === */
-#oferta .row.cols-3{ align-items: stretch; }   /* wszystkie karty tej samej wysokości w wierszu */
-#oferta .card{ display:flex; flex-direction:column; }
-
-/* Ustal minimalną wysokość tytułu na 2 linie – wtedy opis poniżej zacznie się równo we wszystkich kartach.
-   Na bardzo wąskich ekranach zwiększamy do 3 linii (częstsze łamanie tekstu). */
-#oferta .card .h3{
-  --lines: 2;
-  line-height: 1.25;
-  min-height: calc(var(--lines) * 1em * 1.25);
-  margin-top: 2px; /* drobny optyczny balans */
-}
-@media (max-width: 680px){
-  #oferta .card .h3{ --lines: 3; }
-}
-
-/* Delikatne ujednolicenie odstępów w obrębie kart */
-#oferta .card .meta:first-of-type{ margin-bottom: 8px; } /* „Wejście/Popularne/Kariera” */
-#oferta .card ul{ margin-top: 12px; }
-#oferta .card .price{ margin-top: 16px; }
-
-/* CTA w kartach – wyśrodkowane i w zielonym akcencie (spójne z top nav) */
-#oferta .card .btn{
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-ink);
-  display: inline-flex;
-  align-self: center;      /* centrum w osi poziomej w karcie */
-  margin-top: 12px;
-}
-#oferta .card .btn:hover{ filter: saturate(110%); }
-
-/* OFERTA: wyśrodkuj „Wejście/Popularne/Kariera” oraz cenę */
-#oferta .card .meta:first-of-type{
-  display:block;          /* żeby zadziałało centrowanie */
-  text-align:center;
-  margin-bottom:8px;      /* drobny oddech nad h3 */
-}
-
-#oferta .card .price{
-  text-align:center;
-}
-
-/* === OFERTA: równy start listy pod tytułem we wszystkich kartach === */
-/* h3 już ma min-wysokość (2 linie) – teraz pilnujemy opisu (2 linie) */
-#oferta .card .meta:nth-of-type(2){
-  --lines: 2;
-  line-height: 1.45;                          /* spójny rytm */
-  min-height: calc(var(--lines) * 1em * 1.45);/* rezerwuje miejsce na 2 linie */
-  margin-top: 6px;                             /* lekki oddech pod h3 */
-}
-
-/* Na wąskich ekranach zwiększamy bufor, bo tytuły częściej się łamią */
-@media (max-width: 680px){
-  #oferta .card .h3{ --lines: 3; }            /* już miałeś to wcześniej – zostawiamy */
-  #oferta .card .meta:nth-of-type(2){ --lines: 3; }
-}
-
-/* Dodatkowo: standaryzujemy odstępy wokół listy */
-#oferta .card ul{
-  margin-top: 12px;
-}
-
-/* === HERO z pełną szerokością obrazu (full-bleed) === */
-.hero-bleed{
-  position: relative;
-  isolation: isolate;               /* pewny layering overlaya */
-  min-height: clamp(360px, 56vh, 640px);
-}
-
-/* Obraz na pełną szerokość okna, bez „krawędzi” kontenera */
-.hero-bleed .hero-img{
-  display:block;
-  width: 100vw;
-  height: 100%;
-  max-height: clamp(360px, 56vh, 640px);
-  object-fit: cover;
-  object-position: center;
-  /* trik, by rozciągnąć IMG poza .container */
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-}
-
-/* Subtelny biały scrim, żeby czarny tekst był czytelny na dowolnym zdjęciu */
-.hero-bleed::after{
-  content:"";
-  position:absolute; inset:0;
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,.70) 0%,
-    rgba(255,255,255,.45) 35%,
-    rgba(255,255,255,.45) 65%,
-    rgba(255,255,255,.70) 100%
-  );
-  pointer-events:none;
-}
-
-/* Treść na środku obrazu (w pionie i poziomie), z oddechem pod sticky nagłówkiem */
-.hero-bleed .hero-content{
-  position:absolute; inset:0;
-  display:grid;
-  place-content:center;
-  padding-top: 56px; /* odsuwa od sticky headera */
-  text-align:center;
-}
-/* === HERO: -20% wysokości + czarny tekst na zdjęciu === */
-.hero-bleed{
-  /* było: clamp(360px, 56vh, 640px) */
-  min-height: clamp(320px, 45vh, 520px);
-}
-.hero-bleed .hero-img{
-  /* było: clamp(360px, 56vh, 640px) */
-  max-height: clamp(320px, 45vh, 520px);
-}
-
-/* 100% czarny tekst w obrębie hero */
-.hero-bleed .hero-content,
-.hero-bleed .hero-title,
-.hero-bleed .hero-lead,
-.hero-bleed .eyebrow {
-  color: #000;
-}
-.hero-bleed a { color:#000; }
-
-/* mocniejszy, jaśniejszy scrim dla kontrastu na dowolnym zdjęciu */
-.hero-bleed::after{
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,.82) 0%,
-    rgba(255,255,255,.60) 35%,
-    rgba(255,255,255,.60) 65%,
-    rgba(255,255,255,.82) 100%
-  );
-}
-
-/* drobny tuning na bardzo małych ekranach */
-@media (max-width: 420px){
-  .hero-bleed{ min-height: clamp(300px, 42vh, 480px); }
-  .hero-bleed .hero-img{ max-height: clamp(300px, 42vh, 480px); }
-}
-
-/* HERO: tekst nad scrimem + 100% czarny */
-.hero-bleed{
-  position: relative;
-  isolation: isolate; /* własny stacking context */
-}
-
-/* scrim POD treścią (i nad obrazem) */
-.hero-bleed::after{ z-index: 0; }
-
-/* obraz NA DOLE stosu, scrim pośrodku, treść na górze */
-.hero-bleed .hero-img{
-  position: relative;
-  z-index: -1;
-}
-.hero-bleed .hero-content{
-  position: relative;
-  z-index: 1;
-  color: #000;            /* podstawowy kolor w sekcji hero */
-}
-
-/* doprecyzowanie: wszystko w hero ma być czarne */
-.hero-bleed .hero-title,
-.hero-bleed .hero-lead,
-.hero-bleed .hero-lead strong,
-.hero-bleed .eyebrow,
-.hero-bleed a { color:#000; }
-
-/* === HERO: obraz pod spodem, scrim pośrodku, treść na górze === */
-.hero-bleed{
-  position: relative;
-  isolation: isolate;
-  min-height: clamp(320px, 45vh, 520px); /* Twoje -20% wysokości */
-}
-
-/* Obraz wypełnia cały hero */
-.hero-bleed .hero-img{
-  position: absolute; inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 40%; /* dostosuj kadr w pionie, np. 35–50% */
-  margin: 0;                 /* wyłączamy wcześniejszy hack z margin-left */
-  z-index: 0;
-}
-
-/* Jaśniejszy scrim dla kontrastu, PONIŻEJ tekstu */
-.hero-bleed::after{
-  content:"";
-  position:absolute; inset:0;
-  z-index: 1;
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,.82) 0%,
-    rgba(255,255,255,.60) 35%,
-    rgba(255,255,255,.60) 65%,
-    rgba(255,255,255,.82) 100%
-  );
-  pointer-events:none;
-}
-
-/* Treść NA GÓRZE, idealnie na środku */
-.hero-bleed .hero-content{
-  position: absolute; inset: 0;
-  z-index: 2;
-  display: grid;
-  place-content: center;
-  padding-top: 56px; /* odsunie od sticky headera */
-  text-align: center;
-}
-
-/* Twardo czarny tekst w hero */
-.hero-bleed .eyebrow,
-.hero-bleed .hero-title,
-.hero-bleed .hero-lead,
-.hero-bleed .hero-lead strong { color: #000; }
-
-/* HERO: ~7% jaśniejszy od #000 */
-.hero-bleed .eyebrow,
-.hero-bleed .hero-title,
-.hero-bleed .hero-lead,
-.hero-bleed .hero-lead strong {
-  /* 93% krycia czerni ≈ -7% „czerni” wizualnie */
-  color: rgba(0,0,0,.93);
-}
