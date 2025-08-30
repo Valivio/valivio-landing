@@ -390,3 +390,52 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
 .hero-bleed .hero-lead strong,
 .hero-bleed .eyebrow,
 .hero-bleed a { color:#000; }
+
+/* === HERO: obraz pod spodem, scrim pośrodku, treść na górze === */
+.hero-bleed{
+  position: relative;
+  isolation: isolate;
+  min-height: clamp(320px, 45vh, 520px); /* Twoje -20% wysokości */
+}
+
+/* Obraz wypełnia cały hero */
+.hero-bleed .hero-img{
+  position: absolute; inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 40%; /* dostosuj kadr w pionie, np. 35–50% */
+  margin: 0;                 /* wyłączamy wcześniejszy hack z margin-left */
+  z-index: 0;
+}
+
+/* Jaśniejszy scrim dla kontrastu, PONIŻEJ tekstu */
+.hero-bleed::after{
+  content:"";
+  position:absolute; inset:0;
+  z-index: 1;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,.82) 0%,
+    rgba(255,255,255,.60) 35%,
+    rgba(255,255,255,.60) 65%,
+    rgba(255,255,255,.82) 100%
+  );
+  pointer-events:none;
+}
+
+/* Treść NA GÓRZE, idealnie na środku */
+.hero-bleed .hero-content{
+  position: absolute; inset: 0;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  padding-top: 56px; /* odsunie od sticky headera */
+  text-align: center;
+}
+
+/* Twardo czarny tekst w hero */
+.hero-bleed .eyebrow,
+.hero-bleed .hero-title,
+.hero-bleed .hero-lead,
+.hero-bleed .hero-lead strong { color: #000; }
