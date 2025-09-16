@@ -1,12 +1,12 @@
 {
   "items": [
     {
-      "q": "Czy konsultacje zastępują psychoterapię?",
-      "a": "Nie. Konsultacje są pracą rozwojowo-decyzyjną (plan, nawyki, finanse osobiste, kariera). W razie potrzeby rekomenduję psychoterapię lub inną formę pomocy."
+      "q": "Czy to jest terapia?",
+      "a": "Nie, spotkania są rozwojowo-decyzyjne. (plan, nawyki, finanse osobiste, kariera). W razie potrzeby rekomenduję psychoterapię lub inną formę pomocy"
     },
     {
-      "q": "Jak wyglądają spotkania 100% online?",
-      "a": "Spotykamy się przez Google Meet lub Zoom. Po rezerwacji dostajesz link, kalendarz ICS i krótkie przygotowanie do sesji."
+      "q": "Co się dzieje na spotkaniach?",
+      "a": "Najpierw ustalamy co się dzieje. Później układamy plan działania."
     },
     {
       "q": "Czy można płacić BLIKIEM?",
