@@ -1,1 +1,28 @@
-
+{
+  "items": [
+    {
+      "q": "Czy konsultacje zastępują psychoterapię?",
+      "a": "Nie. Konsultacje są pracą rozwojowo-decyzyjną (plan, nawyki, finanse osobiste, kariera). W razie potrzeby rekomenduję psychoterapię lub inną formę pomocy."
+    },
+    {
+      "q": "Jak wyglądają spotkania 100% online?",
+      "a": "Spotykamy się przez Google Meet lub Zoom. Po rezerwacji dostajesz link, kalendarz ICS i krótkie przygotowanie do sesji."
+    },
+    {
+      "q": "Czy można płacić BLIKIEM?",
+      "a": "Tak. Płatność jest wymagana przy rezerwacji terminu. Po opłaceniu otrzymasz potwierdzenie i fakturę."
+    },
+    {
+      "q": "Co jeśli muszę przełożyć termin?",
+      "a": "Możesz przełożyć bezpłatnie najpóźniej 24h przed spotkaniem (link w mailu potwierdzającym). Później — zgodnie z polityką odwołań."
+    },
+    {
+      "q": "Czy pracujemy też nad budżetem i zadłużeniem?",
+      "a": "Tak. Porządkujemy budżet, bufory, priorytety spłat i nawyki. Bez oceny, z prostym planem 30–60–90 dni."
+    },
+    {
+      "q": "Czy wystawiasz faktury?",
+      "a": "Tak, faktura elektroniczna jest wysyłana automatycznie po zaksięgowaniu płatności."
+    }
+  ]
+}
