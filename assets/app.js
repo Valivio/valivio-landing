@@ -75,17 +75,17 @@ function cardProces(obj) {
       '<p class="meta">' + (obj.text || '') + '</p>' +
     '</article>';
 }
-// OFERTA: bez kicker + max 3 bullets (po 1 linijce)
+// OFERTA: bez "kicker" + max 3 bullets (po 1 linijce); klasy of-* dla stałych wysokości
 function cardOferta(obj) {
   var items = (obj.bullets || []).slice(0, 3).map(function(li){
     return '<li>' + li + '</li>';
   }).join('');
   return '' +
     '<article class="card">' +
-      '<h3 class="h3 of-title">' + (obj.title || '') + '</h3>' +
-      '<p class="meta of-desc">' + (obj.desc || '') + '</p>' +
-      '<ul class="mt-12 of-list">' + items + '</ul>' +
-      '<p class="price mt-16 of-price">' + (obj.price || '') + '</p>' +
+      '<h3 class="h3 of-title">' + (obj.title || '') + '</h3>' +              // Title (1–2 linie, pole = 2 linie)
+      '<p class="meta of-desc">' + (obj.desc || '') + '</p>' +                 // Desc (dokładnie 2 linie)
+      '<ul class="mt-12 of-list">' + items + '</ul>' +                         // Bullets (dokładnie 3 wiersze)
+      '<p class="price mt-16 of-price">' + (obj.price || '') + '</p>' +        // Price (1 linia)
       '<a class="btn" href="#kontakt">Umów sesję</a>' +
     '</article>';
 }
@@ -106,14 +106,15 @@ function initDlaKogoCarousel(items) {
   var mount = document.querySelector('#dlaKogoCards');
   if (!mount || !Array.isArray(items) || !items.length) return;
 
+  // usuń klasy siatki, bo karuzela ma własny layout
   mount.classList.remove('row', 'cols-3');
 
   var prefersReduced = false;
   try { prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
-  var GAP = 24;
-  var VISIBLE = getVisible();
-  var current = 0;
+  var GAP = 24; // musi odpowiadać --dk-gap w CSS
+  var VISIBLE = getVisible();   // ile kart naraz (3/2/1)
+  var current = 0;              // indeks realnej karty (0..n-1)
   var viewport, track, timer = null;
 
   function getVisible() {
@@ -122,13 +123,18 @@ function initDlaKogoCarousel(items) {
     if (w <= 960) return 2;
     return 3;
   }
+  function getAutoDelay() {
+    // telefon (VISIBLE === 1) → ~2s; większe ekrany → 4s
+    return (VISIBLE === 1) ? 2000 : 4000;
+  }
   function stepWidth() {
     var first = track && track.querySelector('.dk-card');
     if (!first) return 0;
     var w = first.getBoundingClientRect().width;
-    return w + GAP;
+    return w + GAP; // szerokość karty + odstęp
   }
   function equalizeHeights() {
+    // wyrównanie wysokości kart + stała wysokość viewportu
     var cards = track.querySelectorAll('.dk-card .card');
     var maxH = 0;
     for (var i=0; i<cards.length; i++){
@@ -152,8 +158,8 @@ function initDlaKogoCarousel(items) {
     viewport = mount.querySelector('.dk-viewport');
     track = mount.querySelector('.dk-track');
 
-    var before = items.slice(-VISIBLE);
-    var after  = items.slice(0, VISIBLE);
+    var before = items.slice(-VISIBLE);   // klony po lewej
+    var after  = items.slice(0, VISIBLE); // klony po prawej
     var full = before.concat(items, after);
 
     track.innerHTML = full.map(cardDlaKogo).map(function(html){
@@ -161,7 +167,7 @@ function initDlaKogoCarousel(items) {
     }).join('');
 
     current = 0;
-    jumpTo(current);
+    jumpTo(current);      // start bez animacji
     equalizeHeights();
     startAuto();
   }
@@ -170,14 +176,17 @@ function initDlaKogoCarousel(items) {
     var dist = -offsetCards * stepWidth();
     track.style.transition = 'none';
     track.style.transform = 'translateX('+ dist +'px)';
+    // force reflow
     void track.offsetHeight;
     track.style.transition = 'transform .5s ease';
   }
+  // RUCH W LEWO (kolejny box)
   function moveLeftByOne() {
     current += 1;
     var offsetCards = current + VISIBLE;
     var dist = -offsetCards * stepWidth();
     track.style.transform = 'translateX('+ dist +'px)';
+    // po dojściu do prawego klona — „cichy” skok na realny początek
     if (current >= items.length) {
       track.addEventListener('transitionend', function handle() {
         track.removeEventListener('transitionend', handle);
@@ -189,38 +198,43 @@ function initDlaKogoCarousel(items) {
   function startAuto() {
     stopAuto();
     if (items.length <= VISIBLE || prefersReduced) return;
-    timer = setInterval(moveLeftByOne, 4000);
+    timer = setInterval(moveLeftByOne, getAutoDelay());
   }
   function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
 
+  // pauza interakcyjna
   mount.addEventListener('mouseenter', stopAuto);
   mount.addEventListener('mouseleave', startAuto);
   mount.addEventListener('touchstart', function(){ stopAuto(); setTimeout(startAuto, 6000); }, { passive:true });
 
+  // rebuild/pozycjonowanie + ponowne wyrównanie przy zmianie rozmiaru
   var rAF = null;
   window.addEventListener('resize', function(){
     if (rAF) cancelAnimationFrame(rAF);
     rAF = requestAnimationFrame(function(){
       var v = getVisible();
-      if (v !== VISIBLE) build(); else { jumpTo(current); equalizeHeights(); }
+      if (v !== VISIBLE) build(); else { jumpTo(current); equalizeHeights(); stopAuto(); startAuto(); }
     });
   });
 
   build();
 }
 
-// === OFERTA: wyrównanie wysokości kart w siatce ===
+// === OFERTA: wyrównanie wysokości kart w siatce (identyczny pion) ===
 function equalizeOfertaHeights() {
   var grid = document.querySelector('#ofertaCards');
   if (!grid) return;
   var cards = grid.querySelectorAll('.card');
   if (!cards.length) return;
+
+  // reset → pomiar max
   for (var i = 0; i < cards.length; i++) { cards[i].style.height = 'auto'; }
   var maxH = 0;
   for (var j = 0; j < cards.length; j++) {
     var h = cards[j].offsetHeight;
     if (h > maxH) maxH = h;
   }
+  // ustaw jednakową wysokość
   if (maxH > 0) {
     for (var k = 0; k < cards.length; k++) { cards[k].style.height = maxH + 'px'; }
   }
