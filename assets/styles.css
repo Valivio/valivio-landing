@@ -292,3 +292,21 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+
+/* OFERTA — 2×2 na wszystkich szerokościach */
+#ofertaCards.container.row.cols-3{
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Minimalnie szersza sekcja Oferta na desktopie (bez wpływu na resztę) */
+@media (min-width: 981px){
+  #oferta .container{
+    max-width: 1120px;           /* było var(--maxw)=980px */
+  }
+}
+
+/* Odrobina więcej oddechu między kartami (opcjonalnie) */
+#ofertaCards{
+  gap: 28px;                      /* globalne było 24px; usuń ten blok, jeśli wolisz 24px */
+}
