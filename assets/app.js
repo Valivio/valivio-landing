@@ -38,7 +38,6 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 // === Helpers ===
 function $(sel) { return document.querySelector(sel); }
 function fetchJSON(url) {
-  // ścieżki względne (działają i na Render, i na GitHub Pages)
   var sep = url.indexOf('?') === -1 ? '?' : '&';
   return fetch(url + sep + 'v=' + Date.now(), { cache: 'no-store' })
     .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status + ' for ' + url); return res.text(); })
@@ -50,6 +49,16 @@ function fetchHTML(url, mount, fallbackHTML) {
     .then(function(res){ if(!res.ok) throw new Error('HTTP ' + res.status); return res.text(); })
     .then(function(html){ mount.innerHTML = html; })
     .catch(function(){ if (fallbackHTML) mount.innerHTML = fallbackHTML; });
+}
+function pad2(n){ return n<10 ? '0'+n : ''+n; }
+function fmtISODate(d){
+  return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
+}
+function plDayName(date){
+  return date.toLocaleDateString('pl-PL', { weekday:'short' }).replace('.', '');
+}
+function plDateLabel(date){
+  return date.toLocaleDateString('pl-PL', { day:'2-digit', month:'2-digit' });
 }
 
 // === Renderery kart (HTML) ===
@@ -77,7 +86,7 @@ function cardOferta(obj) {
       '<p class="meta of-desc">' + (obj.desc || '') + '</p>' +
       '<ul class="mt-12 of-list">' + items + '</ul>' +
       '<p class="price mt-16 of-price">' + (obj.price || '') + '</p>' +
-      '<a class="btn" href="index.html#kontakt">Umów sesję</a>' +
+      '<a class="btn" href="rezerwacja.html">Umów sesję</a>' +   // <<< tu kierujemy do kalendarza
     '</article>';
 }
 function itemFaq(obj) {
@@ -248,9 +257,8 @@ var FALLBACK_DATA = {
   ]
 };
 
-// === Load JSON & render (odporne na błędy plików) ===
+// === Load JSON & render (home + FAQ + About content) ===
 function loadData() {
-  // 1) data.json (względna ścieżka)
   fetchJSON('assets/data.json').then(function(data){
     if (!data) data = FALLBACK_DATA;
 
@@ -267,7 +275,6 @@ function loadData() {
       equalizeOfertaHeights();
     }
 
-    // 2) FAQ (względna ścieżka)
     var faqMount = document.querySelector('#faqList');
     if (faqMount) {
       fetchJSON('assets/faq.json').then(function(faq){
@@ -277,8 +284,6 @@ function loadData() {
     }
   });
 }
-
-// === O MNIE: wczytanie HTML z pliku (względna ścieżka) ===
 function loadAboutContent() {
   var mount = document.getElementById('aboutContent');
   if (!mount) return;
@@ -289,10 +294,123 @@ function loadAboutContent() {
   );
 }
 
+// === Rezerwacja: kalendarz + placeholder płatności ===
+function loadBooking(){
+  var mount = document.getElementById('bookMount');
+  if (!mount) return;
+
+  var datesEl = document.getElementById('dates');
+  var slotsEl = document.getElementById('slots');
+  var summaryEl = document.getElementById('summaryText');
+  var payBtn = document.getElementById('payBtn');
+  var modal = document.getElementById('payModal');
+  var backdrop = document.getElementById('payBackdrop');
+  var payInfo = document.getElementById('payInfo');
+  var payClose = document.getElementById('payClose');
+
+  var selectedDate = null;
+  var selectedTime = null;
+  var dataSlots = {};
+
+  function showModal(){
+    if (!selectedDate || !selectedTime) return;
+    payInfo.textContent = 'Termin: ' + selectedDate + ' godz. ' + selectedTime + '.';
+    modal.classList.add('show'); backdrop.classList.add('show');
+  }
+  function hideModal(){
+    modal.classList.remove('show'); backdrop.classList.remove('show');
+  }
+
+  backdrop.addEventListener('click', hideModal);
+  payClose.addEventListener('click', hideModal);
+  window.addEventListener('keydown', function(e){ if (e.key === 'Escape') hideModal(); });
+
+  function renderDates(){
+    var today = new Date(); today.setHours(0,0,0,0);
+    var days = [];
+    for (var i=0;i<21;i++){
+      var d = new Date(today); d.setDate(today.getDate()+i);
+      days.push(d);
+    }
+    datesEl.innerHTML = days.map(function(d){
+      var iso = fmtISODate(d);
+      var disabled = d < today;
+      return ''+
+        '<button class="date-btn" data-date="'+iso+'" '+(disabled?'disabled':'')+'>'+
+          '<span class="date-dow">'+ plDayName(d) +'</span>'+
+          '<span>'+ plDateLabel(d) +'</span>'+
+        '</button>';
+    }).join('');
+  }
+
+  function renderSlotsFor(dateISO){
+    var list = (dataSlots[dateISO] || []);
+    slotsEl.innerHTML = list.length
+      ? list.map(function(t){
+          return '<button class="slot-btn" data-time="'+t+'">'+t+'</button>';
+        }).join('')
+      : '<p class="muted">Brak terminów dla wybranego dnia.</p>';
+  }
+
+  function updateSummary(){
+    if (selectedDate && selectedTime){
+      summaryEl.textContent = 'Wybrano: ' + selectedDate + ' — ' + selectedTime;
+      payBtn.disabled = false;
+    } else {
+      summaryEl.textContent = 'Nie wybrano terminu.';
+      payBtn.disabled = true;
+    }
+  }
+
+  datesEl.addEventListener('click', function(e){
+    var btn = e.target.closest('.date-btn');
+    if (!btn || btn.disabled) return;
+    selectedDate = btn.getAttribute('data-date');
+    selectedTime = null;
+    datesEl.querySelectorAll('.date-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    renderSlotsFor(selectedDate);
+    updateSummary();
+  });
+
+  slotsEl.addEventListener('click', function(e){
+    var btn = e.target.closest('.slot-btn');
+    if (!btn) return;
+    selectedTime = btn.getAttribute('data-time');
+    slotsEl.querySelectorAll('.slot-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    updateSummary();
+  });
+
+  payBtn.addEventListener('click', function(){
+    // tu później podepniemy prawdziwą płatność → teraz placeholder
+    showModal();
+  });
+
+  // load slots JSON
+  fetchJSON('assets/slots.json').then(function(json){
+    if (json && json.slots) dataSlots = json.slots;
+    renderDates();
+    // auto-wybór pierwszego dnia z dostępnym slotem
+    var firstWithSlot = null;
+    var btns = datesEl.querySelectorAll('.date-btn');
+    for (var i=0;i<btns.length;i++){
+      var d = btns[i].getAttribute('data-date');
+      if ((dataSlots[d] || []).length){
+        firstWithSlot = btns[i]; break;
+      }
+    }
+    if (firstWithSlot){
+      firstWithSlot.click();
+    }
+  });
+}
+
 // Start
 document.addEventListener('DOMContentLoaded', function(){
   loadData();
   loadAboutContent();
+  loadBooking();
 });
 
 // Równe wysokości kart Oferty przy resize
