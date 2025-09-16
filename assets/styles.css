@@ -245,3 +245,20 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
   color: var(--accent-ink);
 }
 #ofertaCards .btn:hover{ filter: saturate(110%); }
+
+/* OFERTA – wyśrodkowanie treści w kartach */
+#ofertaCards .card{
+  text-align: center;
+}
+
+/* Bullets wyśrodkowane (kropka + tekst) */
+#ofertaCards .card .of-list{
+  list-style-position: inside;  /* kropka w środku wraz z tekstem */
+  padding-left: 0;              /* bez wcięcia */
+  margin-left: 0;
+}
+
+/* (opcjonalnie) kosmetyka odstępów przy centrowaniu */
+#ofertaCards .card .of-title{ margin-left:auto; margin-right:auto; }
+#ofertaCards .card .of-desc{  margin-left:auto; margin-right:auto; }
+#ofertaCards .card .of-price{ margin-left:auto; margin-right:auto; }
