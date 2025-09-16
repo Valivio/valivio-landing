@@ -188,3 +188,7 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
   :root{ --anchor-offset: 120px; }       /* mobile – header zwykle wyższy */
 }
 section[id]{ scroll-margin-top: var(--anchor-offset); }
+
+/* Dla kogo – subtelny efekt przy przewinięciu (fade+slide) */
+#dlaKogoCards{ transition: opacity .28s ease, transform .28s ease; }
+#dlaKogoCards.dk-fade{ opacity:.0; transform: translateY(6px); }
