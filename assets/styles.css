@@ -395,3 +395,59 @@ section[id]{ scroll-margin-top: var(--anchor-offset); }
 
 /* (opcjonalnie) przycisk zawsze przy dole karty – ładna linia końcowa */
 #ofertaCards .btn{ margin-top: auto; align-self: center; }
+
+/* === OFERTA — stałe „pola” i odstępy: Title(1–2) + 1 linia + Desc(2) + 1 linia + Bullets(3) + 1 linia + Price(1) === */
+
+/* Title: dopuszczamy 1–2 linie, ale obszar ma wysokość 2 linii
+   → dzięki temu Desc zawsze zaczyna się z tej samej wysokości.
+   Odstęp 1 linia realizujemy marginem na .of-desc. */
+#oferta .card .of-title{
+  --lh-title: 1.25;
+  line-height: var(--lh-title);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;            /* max 2 linie */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(2 * 1em * var(--lh-title));
+  max-height: calc(2 * 1em * var(--lh-title));
+  margin: 0;
+}
+
+/* Zawsze 1 linia przerwy między Title a Desc + Desc dokładnie 2 linie */
+#oferta .card .of-desc{
+  --lh-desc: 1.45;
+  margin-top: calc(1em * var(--lh-desc));  /* = 1 linia odstępu, zawsze */
+  line-height: var(--lh-desc);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;                   /* dokładnie 2 linie */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(2 * 1em * var(--lh-desc));
+  max-height: calc(2 * 1em * var(--lh-desc));
+}
+
+/* Zawsze 1 linia przerwy między Desc a Bullets
+   Bullets: 3 wiersze, każdy zaczyna się od kropki i mieści się w 1 linii */
+#oferta .card .of-list{
+  --lh-li: 1.45;
+  margin-top: calc(1em * var(--lh-li));    /* 1 linia odstępu */
+  list-style-type: disc;
+  list-style-position: outside;
+  padding-left: 18px;                       /* miejsce na kropkę */
+  line-height: var(--lh-li);
+  min-height: calc(3 * 1em * var(--lh-li));
+  max-height: calc(3 * 1em * var(--lh-li));
+  overflow: hidden;
+}
+#oferta .card .of-list li{
+  white-space: nowrap;                      /* jedna linia */
+  overflow: hidden;
+  text-overflow: ellipsis;                  /* „…” gdy zbyt długie */
+}
+
+/* 1 linia przerwy między Bullets a Price + Price w 1 linii */
+#oferta .card .of-price{
+  --lh-li: 1.45;
+  margin-top: calc(1em * var(--lh-li));
+  text-align: center;
+}
