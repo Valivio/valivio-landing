@@ -243,22 +243,20 @@ function loadData() {
       }
 
       // FAQ (z osobnego pliku)
-      var faqMount = document.querySelector('#faqList');
-      if (faqMount) {
-        fetch('/assets/faq.json', { cache: 'no-cache' })
-          .then(function(res){ if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); })
-          .then(function(faq){
-            var items = (faq && Array.isArray(faq.items)) ? faq.items : [];
-            faqMount.innerHTML = items.map(itemFaq).join('');
-          })
-          .catch(function(err){ console.error('FAQ JSON error:', err); });
-      }
+      // FAQ (z osobnego pliku, z cache-busterem)
+var faqMount = document.querySelector('#faqList');
+if (faqMount) {
+  var cb = Date.now(); // cache-buster
+  fetch('/assets/faq.json?v=' + cb, { cache: 'no-store' })
+    .then(function(res){ if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); })
+    .then(function(faq){
+      var items = (faq && Array.isArray(faq.items)) ? faq.items : [];
+      // diagnostyka: ile faktycznie wczytano?
+      console.log('FAQ items loaded:', items.length);
+      faqMount.innerHTML = items.map(itemFaq).join('');
     })
-    .catch(function(err){
-      console.error('Nie udało się wczytać /assets/data.json:', err);
-    });
+    .catch(function(err){ console.error('FAQ JSON error:', err); });
 }
-
 document.addEventListener('DOMContentLoaded', loadData);
 
 // Re-wyrównanie „Oferty” przy resize (debounce przez rAF)
