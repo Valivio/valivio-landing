@@ -310,3 +310,10 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
 #ofertaCards{
   gap: 28px;                      /* globalne było 24px; usuń ten blok, jeśli wolisz 24px */
 }
+
+/* OFERTA — 20% węższe karty na desktopie */
+@media (min-width: 981px){
+  #oferta .container{
+    max-width: 896px; /* było 1120px */
+  }
+}
