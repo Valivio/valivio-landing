@@ -66,7 +66,7 @@ function cardOferta(obj) {
     '</article>';
 }
 
-// === Karuzela „Dla kogo” — poziomy autoscroll: 3 widoczne, przesuw o 1 ===
+// === Karuzela „Dla kogo” — poziomy autoscroll: 3 widoczne, przesuw o 1 W LEWO ===
 function initDlaKogoCarousel(items) {
   var mount = document.querySelector('#dlaKogoCards');
   if (!mount || !Array.isArray(items) || !items.length) return;
@@ -78,8 +78,8 @@ function initDlaKogoCarousel(items) {
   try { prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
   var GAP = 24; // musi odpowiadać --dk-gap w CSS
-  var VISIBLE = getVisible();   // ile kart naraz
-  var current = 0;              // indeks w realnych elementach
+  var VISIBLE = getVisible();   // ile kart naraz (3/2/1)
+  var current = 0;              // indeks realnej karty (0..n-1)
   var viewport, track, timer = null;
 
   function getVisible() {
@@ -93,7 +93,7 @@ function initDlaKogoCarousel(items) {
     var first = track && track.querySelector('.dk-card');
     if (!first) return 0;
     var w = first.getBoundingClientRect().width;
-    return w + GAP;
+    return w + GAP; // szerokość karty + odstęp
   }
 
   function build() {
@@ -105,8 +105,8 @@ function initDlaKogoCarousel(items) {
     viewport = mount.querySelector('.dk-viewport');
     track = mount.querySelector('.dk-track');
 
-    var before = items.slice(-VISIBLE);
-    var after  = items.slice(0, VISIBLE);
+    var before = items.slice(-VISIBLE);   // klony po lewej
+    var after  = items.slice(0, VISIBLE); // klony po prawej
     var full = before.concat(items, after);
 
     track.innerHTML = full.map(cardDlaKogo).map(function(html){
@@ -114,12 +114,13 @@ function initDlaKogoCarousel(items) {
     }).join('');
 
     current = 0;
-    jumpTo(current);   // ustaw start bez animacji
+    jumpTo(current);   // ustaw start (bez animacji)
     startAuto();
   }
 
   function jumpTo(realIndex) {
-    var offsetCards = realIndex + VISIBLE; // dolicz klony po lewej
+    // ustaw transform na realIndex, z uwzględnieniem klonów po lewej
+    var offsetCards = realIndex + VISIBLE;
     var dist = -offsetCards * stepWidth();
     track.style.transition = 'none';
     track.style.transform = 'translateX('+ dist +'px)';
@@ -128,34 +129,37 @@ function initDlaKogoCarousel(items) {
     track.style.transition = 'transform .5s ease';
   }
 
-  function moveRightByOne() {
-    // przesuwamy widok w PRAWO (czyli pokazujemy „poprzedni” element) – ruch „od lewej do prawej”
-    current = (current - 1 + items.length) % items.length;
+  // RUCH W LEWO (pokazujemy kolejną kartę): current++ i płynny przesuw
+  function moveLeftByOne() {
+    current += 1;
     var offsetCards = current + VISIBLE;
     var dist = -offsetCards * stepWidth();
     track.style.transform = 'translateX('+ dist +'px)';
 
-    // gdy weszliśmy na lewy klon (wizualnie ostatni element), skoryguj po animacji
-    if (current === items.length - 1) {
-      track.addEventListener('transitionend', handleLoopFix, { once: true });
+    // Jeśli minęliśmy ostatnią realną (weszliśmy na prawy klon),
+    // po animacji przeskocz dyskretnie na realny początek.
+    if (current >= items.length) {
+      track.addEventListener('transitionend', function handle() {
+        track.removeEventListener('transitionend', handle);
+        current = 0;
+        jumpTo(current); // bez animacji, w to samo wizualne miejsce
+      }, { once: true });
     }
   }
-
-  function handleLoopFix() { jumpTo(items.length - 1); }
 
   function startAuto() {
     stopAuto();
     if (items.length <= VISIBLE || prefersReduced) return;
-    timer = setInterval(moveRightByOne, 4000);
+    timer = setInterval(moveLeftByOne, 4000);
   }
   function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
 
-  // pauzy
+  // pauza interakcyjna
   mount.addEventListener('mouseenter', stopAuto);
   mount.addEventListener('mouseleave', startAuto);
   mount.addEventListener('touchstart', function(){ stopAuto(); setTimeout(startAuto, 6000); }, { passive:true });
 
-  // rebuild przy zmianie szerokości
+  // rebuild/pozycjonowanie przy zmianie rozmiaru
   var rAF = null;
   window.addEventListener('resize', function(){
     if (rAF) cancelAnimationFrame(rAF);
