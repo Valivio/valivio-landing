@@ -71,7 +71,7 @@ function initDlaKogoCarousel(items) {
   var mount = document.querySelector('#dlaKogoCards');
   if (!mount || !Array.isArray(items) || !items.length) return;
 
-  // usuń klasę gridu, bo karuzela ma własny layout
+  // usuń klasy siatki, bo karuzela ma własny layout
   mount.classList.remove('row', 'cols-3');
 
   var prefersReduced = false;
@@ -96,6 +96,24 @@ function initDlaKogoCarousel(items) {
     return w + GAP; // szerokość karty + odstęp
   }
 
+  function equalizeHeights() {
+    // 1) każdej .card zdejmij height, zmierz max
+    var cards = track.querySelectorAll('.dk-card .card');
+    var maxH = 0;
+    for (var i=0; i<cards.length; i++){
+      cards[i].style.height = 'auto';
+      var h = cards[i].offsetHeight;
+      if (h > maxH) maxH = h;
+    }
+    // 2) ustaw stałą wysokość viewportu i „rozciągnij” każdą .card do 100%
+    if (maxH > 0) {
+      viewport.style.height = maxH + 'px';
+      for (var j=0; j<cards.length; j++){
+        cards[j].style.height = '100%';
+      }
+    }
+  }
+
   function build() {
     VISIBLE = getVisible();
     mount.innerHTML =
@@ -114,12 +132,12 @@ function initDlaKogoCarousel(items) {
     }).join('');
 
     current = 0;
-    jumpTo(current);   // ustaw start (bez animacji)
+    jumpTo(current);      // ustaw start (bez animacji)
+    equalizeHeights();    // wyrównaj wysokości
     startAuto();
   }
 
   function jumpTo(realIndex) {
-    // ustaw transform na realIndex, z uwzględnieniem klonów po lewej
     var offsetCards = realIndex + VISIBLE;
     var dist = -offsetCards * stepWidth();
     track.style.transition = 'none';
@@ -129,20 +147,19 @@ function initDlaKogoCarousel(items) {
     track.style.transition = 'transform .5s ease';
   }
 
-  // RUCH W LEWO (pokazujemy kolejną kartę): current++ i płynny przesuw
+  // RUCH W LEWO (kolejny box)
   function moveLeftByOne() {
     current += 1;
     var offsetCards = current + VISIBLE;
     var dist = -offsetCards * stepWidth();
     track.style.transform = 'translateX('+ dist +'px)';
 
-    // Jeśli minęliśmy ostatnią realną (weszliśmy na prawy klon),
-    // po animacji przeskocz dyskretnie na realny początek.
+    // po dojściu do prawego klona — „cichy” skok na realny początek
     if (current >= items.length) {
       track.addEventListener('transitionend', function handle() {
         track.removeEventListener('transitionend', handle);
         current = 0;
-        jumpTo(current); // bez animacji, w to samo wizualne miejsce
+        jumpTo(current);
       }, { once: true });
     }
   }
@@ -159,13 +176,13 @@ function initDlaKogoCarousel(items) {
   mount.addEventListener('mouseleave', startAuto);
   mount.addEventListener('touchstart', function(){ stopAuto(); setTimeout(startAuto, 6000); }, { passive:true });
 
-  // rebuild/pozycjonowanie przy zmianie rozmiaru
+  // rebuild/pozycjonowanie + ponowne wyrównanie przy zmianie rozmiaru
   var rAF = null;
   window.addEventListener('resize', function(){
     if (rAF) cancelAnimationFrame(rAF);
     rAF = requestAnimationFrame(function(){
       var v = getVisible();
-      if (v !== VISIBLE) build(); else jumpTo(current);
+      if (v !== VISIBLE) build(); else { jumpTo(current); equalizeHeights(); }
     });
   });
 
