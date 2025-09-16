@@ -125,7 +125,7 @@ function initDlaKogoCarousel(items) {
   }
   function getAutoDelay() {
     // telefon (VISIBLE === 1) → ~2s; większe ekrany → 4s
-    return (VISIBLE === 1) ? 2000 : 4000;
+    return (VISIBLE === 1) ? 3000 : 4000;
   }
   function stepWidth() {
     var first = track && track.querySelector('.dk-card');
