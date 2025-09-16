@@ -259,3 +259,22 @@ section[id]{ scroll-margin-top: var(--anchor-offset); }
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0;
 }
 #dla-kogo .card .meta{ margin-top:calc(1em * 1.25); }
+
+/* === DLA KOGO – równanie wysokości kart w sliderze === */
+#dlaKogoCards .dk-track{
+  align-items: stretch;               /* wyrównuje wysokość flex items w wierszu */
+}
+#dlaKogoCards .dk-card{
+  display: flex;                      /* pozwala rozciągnąć .card do 100% */
+}
+#dlaKogoCards .dk-card .card{
+  display: flex; flex-direction: column; height: 100%;
+}
+
+/* === JAK PRACUJĘ / OFERTA – równe wysokości w siatkach === */
+#procesCards .card,
+#ofertaCards .card{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
