@@ -38,36 +38,58 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 // === Helpers ===
 function $(sel) { return document.querySelector(sel); }
 
+// Bezpieczny fetch JSON (cache-buster + łagodne błędy)
+function fetchJSON(url) {
+  var sep = url.indexOf('?') === -1 ? '?' : '&';
+  var bust = Date.now();
+  return fetch(url + sep + 'v=' + bust, { cache: 'no-store' })
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' for ' + url);
+      return res.text();
+    })
+    .then(function (txt) {
+      try { return JSON.parse(txt); }
+      catch (e) {
+        console.error('[JSON parse error]', url, e.message);
+        return null; // nie wysypuj UI
+      }
+    })
+    .catch(function (err) {
+      console.error('[fetch error]', url, err.message);
+      return null;
+    });
+}
+
 // === Renderery kart (HTML) ===
 function cardDlaKogo(obj) {
   return '' +
     '<article class="card">' +
-      '<h3 class="h3">' + obj.title + '</h3>' +
-      '<p class="meta">' + obj.text + '</p>' +
+      '<h3 class="h3">' + (obj.title || '') + '</h3>' +
+      '<p class="meta">' + (obj.text || '') + '</p>' +
     '</article>';
 }
 function cardProces(obj) {
   return '' +
     '<article class="card">' +
-      '<h3 class="h3">' + obj.title + '</h3>' +
-      '<p class="meta">' + obj.text + '</p>' +
+      '<h3 class="h3">' + (obj.title || '') + '</h3>' +
+      '<p class="meta">' + (obj.text || '') + '</p>' +
     '</article>';
 }
-// OFERTA: bez "kicker" + max 3 bullets (po 1 linijce); klasy of-* dla stałych wysokości
+// OFERTA: bez kicker + max 3 bullets (po 1 linijce)
 function cardOferta(obj) {
   var items = (obj.bullets || []).slice(0, 3).map(function(li){
     return '<li>' + li + '</li>';
   }).join('');
   return '' +
     '<article class="card">' +
-      '<h3 class="h3 of-title">' + obj.title + '</h3>' +              // Title (1–2 linie, pole = 2 linie)
-      '<p class="meta of-desc">' + obj.desc + '</p>' +                 // Desc (dokładnie 2 linie)
-      '<ul class="mt-12 of-list">' + items + '</ul>' +                 // Bullets (dokładnie 3 wiersze)
-      '<p class="price mt-16 of-price">' + obj.price + '</p>' +        // Price (1 linia)
+      '<h3 class="h3 of-title">' + (obj.title || '') + '</h3>' +
+      '<p class="meta of-desc">' + (obj.desc || '') + '</p>' +
+      '<ul class="mt-12 of-list">' + items + '</ul>' +
+      '<p class="price mt-16 of-price">' + (obj.price || '') + '</p>' +
       '<a class="btn" href="#kontakt">Umów sesję</a>' +
     '</article>';
 }
-// FAQ: pojedyncza pozycja
+// FAQ item
 function itemFaq(obj) {
   var q = (obj && obj.q) ? obj.q : '';
   var a = (obj && obj.a) ? obj.a : '';
@@ -79,20 +101,19 @@ function itemFaq(obj) {
     '</details>';
 }
 
-// === Karuzela „Dla kogo” — poziomy autoscroll: 3 widoczne, przesuw o 1 W LEWO ===
+// === Karuzela „Dla kogo” — autoscroll w lewo (3/2/1 widocznych) ===
 function initDlaKogoCarousel(items) {
   var mount = document.querySelector('#dlaKogoCards');
   if (!mount || !Array.isArray(items) || !items.length) return;
 
-  // usuń klasy siatki, bo karuzela ma własny layout
   mount.classList.remove('row', 'cols-3');
 
   var prefersReduced = false;
   try { prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
-  var GAP = 24; // musi odpowiadać --dk-gap w CSS
-  var VISIBLE = getVisible();   // ile kart naraz (3/2/1)
-  var current = 0;              // indeks realnej karty (0..n-1)
+  var GAP = 24;
+  var VISIBLE = getVisible();
+  var current = 0;
   var viewport, track, timer = null;
 
   function getVisible() {
@@ -101,16 +122,13 @@ function initDlaKogoCarousel(items) {
     if (w <= 960) return 2;
     return 3;
   }
-
   function stepWidth() {
     var first = track && track.querySelector('.dk-card');
     if (!first) return 0;
     var w = first.getBoundingClientRect().width;
-    return w + GAP; // szerokość karty + odstęp
+    return w + GAP;
   }
-
   function equalizeHeights() {
-    // wyrównanie wysokości kart wewnątrz karuzeli + stała wysokość viewportu
     var cards = track.querySelectorAll('.dk-card .card');
     var maxH = 0;
     for (var i=0; i<cards.length; i++){
@@ -125,7 +143,6 @@ function initDlaKogoCarousel(items) {
       }
     }
   }
-
   function build() {
     VISIBLE = getVisible();
     mount.innerHTML =
@@ -135,8 +152,8 @@ function initDlaKogoCarousel(items) {
     viewport = mount.querySelector('.dk-viewport');
     track = mount.querySelector('.dk-track');
 
-    var before = items.slice(-VISIBLE);   // klony po lewej
-    var after  = items.slice(0, VISIBLE); // klony po prawej
+    var before = items.slice(-VISIBLE);
+    var after  = items.slice(0, VISIBLE);
     var full = before.concat(items, after);
 
     track.innerHTML = full.map(cardDlaKogo).map(function(html){
@@ -144,29 +161,23 @@ function initDlaKogoCarousel(items) {
     }).join('');
 
     current = 0;
-    jumpTo(current);      // ustaw start (bez animacji)
-    equalizeHeights();    // wyrównaj wysokości
+    jumpTo(current);
+    equalizeHeights();
     startAuto();
   }
-
   function jumpTo(realIndex) {
     var offsetCards = realIndex + VISIBLE;
     var dist = -offsetCards * stepWidth();
     track.style.transition = 'none';
     track.style.transform = 'translateX('+ dist +'px)';
-    // force reflow
     void track.offsetHeight;
     track.style.transition = 'transform .5s ease';
   }
-
-  // RUCH W LEWO (kolejny box)
   function moveLeftByOne() {
     current += 1;
     var offsetCards = current + VISIBLE;
     var dist = -offsetCards * stepWidth();
     track.style.transform = 'translateX('+ dist +'px)';
-
-    // po dojściu do prawego klona — „cichy” skok na realny początek
     if (current >= items.length) {
       track.addEventListener('transitionend', function handle() {
         track.removeEventListener('transitionend', handle);
@@ -175,7 +186,6 @@ function initDlaKogoCarousel(items) {
       }, { once: true });
     }
   }
-
   function startAuto() {
     stopAuto();
     if (items.length <= VISIBLE || prefersReduced) return;
@@ -183,12 +193,10 @@ function initDlaKogoCarousel(items) {
   }
   function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
 
-  // pauza interakcyjna
   mount.addEventListener('mouseenter', stopAuto);
   mount.addEventListener('mouseleave', startAuto);
   mount.addEventListener('touchstart', function(){ stopAuto(); setTimeout(startAuto, 6000); }, { passive:true });
 
-  // rebuild/pozycjonowanie + ponowne wyrównanie przy zmianie rozmiaru
   var rAF = null;
   window.addEventListener('resize', function(){
     if (rAF) cancelAnimationFrame(rAF);
@@ -201,62 +209,98 @@ function initDlaKogoCarousel(items) {
   build();
 }
 
-// === OFERTA: wyrównanie wysokości kart w siatce (identyczny pion) ===
+// === OFERTA: wyrównanie wysokości kart w siatce ===
 function equalizeOfertaHeights() {
   var grid = document.querySelector('#ofertaCards');
   if (!grid) return;
   var cards = grid.querySelectorAll('.card');
   if (!cards.length) return;
-
-  // reset → pomiar max
   for (var i = 0; i < cards.length; i++) { cards[i].style.height = 'auto'; }
   var maxH = 0;
   for (var j = 0; j < cards.length; j++) {
     var h = cards[j].offsetHeight;
     if (h > maxH) maxH = h;
   }
-  // ustaw jednakową wysokość
   if (maxH > 0) {
     for (var k = 0; k < cards.length; k++) { cards[k].style.height = maxH + 'px'; }
   }
 }
 
-// === Load JSON & render ===
+// === Fallback dla data.json (gdyby był błąd) ===
+var FALLBACK_DATA = {
+  "dlaKogo": [
+    { "title": "„Zarabiam, a brak spokoju.”", "text": "Masz dochody, ale brak bufora, nieregularne wydatki i stres przy każdej zmianie rat lub pracy." },
+    { "title": "„Chcę zmiany w pracy.”", "text": "Wypalenie, stagnacja, chęć zmiany kierunku bez ryzykowania wszystkiego naraz." },
+    { "title": "„Po rozstaniu wszystko się posypało.”", "text": "Wsparcie emocjonalno-finansowe po życiowych zmianach (rozstanie, przeprowadzka, start JDG)." },
+    { "title": "„Chaos w wydatkach.”", "text": "Trudno przewidzieć miesiąc do przodu — chcesz prosty system i spokój." },
+    { "title": "„Negocjacje wynagrodzenia.”", "text": "Przygotowanie do rozmowy: argumenty, widełki, scenariusze i granice." },
+    { "title": "„Startuję z JDG.”", "text": "Budżet startowy, poduszka, stawki i plan na pierwsze 90 dni." }
+  ],
+  "proces": [
+    { "title": "1. Diagnoza", "text": "Sytuacja, zasoby, przeszkody. Krótko i na temat." },
+    { "title": "2. Plan 30–60–90", "text": "Kroki, terminy, progi decyzyjne. Jedna kartka, zero chaosu." },
+    { "title": "3. Wdrożenie", "text": "Nawyki, narzędzia, rozmowy (np. z pracodawcą/bankiem)." },
+    { "title": "4. Monitorowanie", "text": "Krótki follow-up i korekty, by efekt został z Tobą." }
+  ],
+  "oferta": [
+    {
+      "title": "Konsultacja 60 minut",
+      "desc": "Szybka diagnoza finansowo-zawodowa, priorytety i pierwsze kroki.",
+      "bullets": ["Brief potrzeb i celów", "3 kluczowe decyzje do podjęcia", "Mini-plan na 2 tygodnie"],
+      "price": "249 zł"
+    },
+    {
+      "title": "Pakiet „Reset finansowy” – 3 sesje",
+      "desc": "Porządkujemy budżet, decyzje i nawyki. Spokój i przewidywalność.",
+      "bullets": ["Plan 30–60–90 dni", "Szablony i arkusze (budżet, bufor, długi)", "E-mail follow-up po każdej sesji"],
+      "price": "699 zł"
+    },
+    {
+      "title": "Pakiet „Kierunek praca” – 5 sesji",
+      "desc": "Zmiana/negocjacje/dalsza ścieżka. Decyzje w zgodzie z wartościami i finansami.",
+      "bullets": ["Strategia zmiany lub rozwoju", "Trening rozmów + plan finansowy", "Materiały i checklisty"],
+      "price": "1 099 zł"
+    }
+  ]
+};
+
+// === Load JSON & render (odporne na błędy plików) ===
 function loadData() {
-  fetch('/assets/data.json', { cache: 'no-cache' })
-    .then(function(res){ if (!res.ok) throw new Error('HTTP '+res.status); return res.json(); })
-    .then(function(data){
-      // Dla kogo – karuzela
-      initDlaKogoCarousel(data && data.dlaKogo || []);
+  // 1) data.json → jeżeli błąd, użyj FALLBACK_DATA
+  fetchJSON('/assets/data.json').then(function(data){
+    if (!data) {
+      console.warn('Używam danych zapasowych dla data.json (błąd/parse).');
+      data = FALLBACK_DATA;
+    }
 
-      // Jak pracuję
-      var procesMount = $('#procesCards');
-      if (procesMount && Array.isArray(data.proces)) {
-        procesMount.innerHTML = data.proces.map(cardProces).join('');
-      }
+    // Dla kogo – karuzela
+    initDlaKogoCarousel(data && data.dlaKogo || []);
 
-      // Oferta
-      var ofertaMount = $('#ofertaCards');
-      if (ofertaMount && Array.isArray(data.oferta)) {
-        ofertaMount.innerHTML = data.oferta.map(cardOferta).join('');
-        equalizeOfertaHeights(); // wyrównaj wysokość kart „Oferty”
-      }
+    // Jak pracuję
+    var procesMount = $('#procesCards');
+    if (procesMount && Array.isArray(data.proces)) {
+      procesMount.innerHTML = data.proces.map(cardProces).join('');
+    }
 
-      // FAQ (z osobnego pliku)
-      // FAQ (z osobnego pliku, z cache-busterem)
-var faqMount = document.querySelector('#faqList');
-if (faqMount) {
-  var cb = Date.now(); // cache-buster
-  fetch('/assets/faq.json?v=' + cb, { cache: 'no-store' })
-    .then(function(res){ if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); })
-    .then(function(faq){
-      var items = (faq && Array.isArray(faq.items)) ? faq.items : [];
-      // diagnostyka: ile faktycznie wczytano?
-      console.log('FAQ items loaded:', items.length);
-      faqMount.innerHTML = items.map(itemFaq).join('');
-    })
-    .catch(function(err){ console.error('FAQ JSON error:', err); });
+    // Oferta
+    var ofertaMount = $('#ofertaCards');
+    if (ofertaMount && Array.isArray(data.oferta)) {
+      ofertaMount.innerHTML = data.oferta.map(cardOferta).join('');
+      equalizeOfertaHeights(); // równe wysokości
+    }
+
+    // 2) FAQ – niezależnie od data.json
+    var faqMount = document.querySelector('#faqList');
+    if (faqMount) {
+      fetchJSON('/assets/faq.json').then(function(faq){
+        var items = (faq && Array.isArray(faq.items)) ? faq.items : [];
+        console.log('FAQ items loaded:', items.length);
+        faqMount.innerHTML = items.map(itemFaq).join('');
+      });
+    }
+  });
 }
+
 document.addEventListener('DOMContentLoaded', loadData);
 
 // Re-wyrównanie „Oferty” przy resize (debounce przez rAF)
@@ -268,5 +312,5 @@ window.addEventListener('resize', (function(){
   };
 })());
 
-// (opcjonalnie) po pełnym załadowaniu fontów jeszcze raz wyrównaj
+// Po pełnym załadowaniu fontów jeszcze raz wyrównaj
 window.addEventListener('load', equalizeOfertaHeights);
