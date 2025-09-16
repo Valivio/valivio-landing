@@ -377,3 +377,21 @@ section[id]{ scroll-margin-top: var(--anchor-offset); }
   text-align: inherit;
   margin: 0;
 }
+
+/* OFERTA: identyczna szerokość kolumn + karty rozciągają się w pionie */
+#ofertaCards.container.row.cols-3{
+  grid-template-columns: repeat(3, 1fr); /* równo co do piksela */
+  align-items: stretch;                   /* wszystkie karty tej samej wysokości w wierszu */
+  grid-auto-rows: 1fr;                    /* każdy kolejny wiersz też równy */
+}
+
+#ofertaCards .card{
+  display: flex;
+  flex-direction: column;
+  height: 100%;            /* rozciągnięcie karty */
+  overflow: hidden;        /* pewność, że nic nie „pcha” szerokości */
+  word-break: break-word;  /* awaryjnie przy bardzo długich słowach */
+}
+
+/* (opcjonalnie) przycisk zawsze przy dole karty – ładna linia końcowa */
+#ofertaCards .btn{ margin-top: auto; align-self: center; }
