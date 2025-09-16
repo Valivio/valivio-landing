@@ -36,9 +36,10 @@ if (form) {
   });
 }
 
-// === Render kart z JSON ===
+// === Helpers ===
 const $ = (sel) => document.querySelector(sel);
 
+// === Karty: renderery ===
 function cardDlaKogo({ title, text }) {
   return `
     <article class="card">
@@ -46,7 +47,6 @@ function cardDlaKogo({ title, text }) {
       <p class="meta">${text}</p>
     </article>`;
 }
-
 function cardProces({ title, text }) {
   return `
     <article class="card">
@@ -54,8 +54,6 @@ function cardProces({ title, text }) {
       <p class="meta">${text}</p>
     </article>`;
 }
-
-// UWAGA: kolejność .meta w ofercie jest ważna (CSS używa :first-of-type i :nth-of-type(2))
 function cardOferta({ kicker, title, desc, bullets = [], price }) {
   const items = bullets.map(li => `<li>${li}</li>`).join('');
   return `
@@ -69,17 +67,73 @@ function cardOferta({ kicker, title, desc, bullets = [], price }) {
     </article>`;
 }
 
+// === Karuzela "Dla kogo": 6 kart, 3 widoczne, przesuw o 1 ===
+function initDlaKogoCarousel(items) {
+  const mount = $('#dlaKogoCards');
+  if (!mount || !Array.isArray(items) || items.length === 0) return;
+
+  const VISIBLE = 3;
+  let idx = 0;
+  const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+
+  function renderAt(start) {
+    const n = items.length;
+    const count = Math.min(VISIBLE, n);
+    const chunks = [];
+    for (let i = 0; i < count; i++) {
+      chunks.push(cardDlaKogo(items[(start + i) % n]));
+    }
+    mount.innerHTML = chunks.join('');
+  }
+
+  // Jeśli kart jest <=3, po prostu renderuj wszystkie i wyjdź.
+  renderAt(0);
+  if (items.length <= VISIBLE || prefersReduced) return;
+
+  // Auto-przewijanie o 1 co 4 sekundy, pauza na hover/tap
+  let timer = setInterval(() => {
+    idx = (idx + 1) % items.length;
+    renderAt(idx);
+    // krótka klasa do subtelnej animacji (jeśli chcesz efekt)
+    mount.classList.add('dk-fade');
+    setTimeout(() => mount.classList.remove('dk-fade'), 320);
+  }, 4000);
+
+  // Pauza na hover
+  mount.addEventListener('mouseenter', () => { clearInterval(timer); });
+  mount.addEventListener('mouseleave', () => {
+    clearInterval(timer);
+    timer = setInterval(() => {
+      idx = (idx + 1) % items.length;
+      renderAt(idx);
+      mount.classList.add('dk-fade');
+      setTimeout(() => mount.classList.remove('dk-fade'), 320);
+    }, 4000);
+  });
+
+  // Krótka pauza po tapnięciu (mobile)
+  mount.addEventListener('touchstart', () => {
+    clearInterval(timer);
+    setTimeout(() => {
+      timer = setInterval(() => {
+        idx = (idx + 1) % items.length;
+        renderAt(idx);
+        mount.classList.add('dk-fade');
+        setTimeout(() => mount.classList.remove('dk-fade'), 320);
+      }, 4000);
+    }, 6000);
+  }, { passive: true });
+}
+
+// === Load JSON & render ===
 async function loadData() {
   try {
     const res = await fetch('assets/data.json', { cache: 'no-cache' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
-    // Dla kogo
-    const dlaKogoMount = $('#dlaKogoCards');
-    if (dlaKogoMount && Array.isArray(data.dlaKogo)) {
-      dlaKogoMount.innerHTML = data.dlaKogo.map(cardDlaKogo).join('');
-    }
+    // Dla kogo – karuzela
+    initDlaKogoCarousel(data.dlaKogo || []);
 
     // Jak pracuję
     const procesMount = $('#procesCards');
@@ -93,7 +147,6 @@ async function loadData() {
       ofertaMount.innerHTML = data.oferta.map(cardOferta).join('');
     }
   } catch (err) {
-    // Łagodne wyciszenie – strona i tak działa z pustymi kontenerami
     console.error('Nie udało się wczytać assets/data.json:', err);
   }
 }
