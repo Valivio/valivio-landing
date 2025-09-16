@@ -53,15 +53,18 @@ function cardProces(obj) {
       '<p class="meta">' + obj.text + '</p>' +
     '</article>';
 }
+
+// OFERTA: bez kickera + 3 bullets max (po 1 linijce każdy)
 function cardOferta(obj) {
-  var items = (obj.bullets || []).map(function(li){ return '<li>'+ li +'</li>'; }).join('');
+  var items = (obj.bullets || []).slice(0, 3).map(function(li){
+    return '<li>' + li + '</li>';
+  }).join('');
   return '' +
     '<article class="card">' +
-      '<p class="meta">' + obj.kicker + '</p>' +
-      '<h3 class="h3">' + obj.title + '</h3>' +
-      '<p class="meta">' + obj.desc + '</p>' +
-      '<ul class="mt-12">' + items + '</ul>' +
-      '<p class="price mt-16">' + obj.price + '</p>' +
+      '<h3 class="h3 of-title">' + obj.title + '</h3>' +              // Title (2 linie)
+      '<p class="meta of-desc">' + obj.desc + '</p>' +                 // Desc (2 linie)
+      '<ul class="mt-12 of-list">' + items + '</ul>' +                 // Bullets (3 wiersze)
+      '<p class="price mt-16 of-price">' + obj.price + '</p>' +        // Price (1 linia)
       '<a class="btn" href="#kontakt">Umów sesję</a>' +
     '</article>';
 }
@@ -97,7 +100,6 @@ function initDlaKogoCarousel(items) {
   }
 
   function equalizeHeights() {
-    // 1) każdej .card zdejmij height, zmierz max
     var cards = track.querySelectorAll('.dk-card .card');
     var maxH = 0;
     for (var i=0; i<cards.length; i++){
@@ -105,7 +107,6 @@ function initDlaKogoCarousel(items) {
       var h = cards[i].offsetHeight;
       if (h > maxH) maxH = h;
     }
-    // 2) ustaw stałą wysokość viewportu i „rozciągnij” każdą .card do 100%
     if (maxH > 0) {
       viewport.style.height = maxH + 'px';
       for (var j=0; j<cards.length; j++){
@@ -132,8 +133,8 @@ function initDlaKogoCarousel(items) {
     }).join('');
 
     current = 0;
-    jumpTo(current);      // ustaw start (bez animacji)
-    equalizeHeights();    // wyrównaj wysokości
+    jumpTo(current);
+    equalizeHeights();
     startAuto();
   }
 
@@ -142,19 +143,15 @@ function initDlaKogoCarousel(items) {
     var dist = -offsetCards * stepWidth();
     track.style.transition = 'none';
     track.style.transform = 'translateX('+ dist +'px)';
-    // force reflow
     void track.offsetHeight;
     track.style.transition = 'transform .5s ease';
   }
 
-  // RUCH W LEWO (kolejny box)
   function moveLeftByOne() {
     current += 1;
     var offsetCards = current + VISIBLE;
     var dist = -offsetCards * stepWidth();
     track.style.transform = 'translateX('+ dist +'px)';
-
-    // po dojściu do prawego klona — „cichy” skok na realny początek
     if (current >= items.length) {
       track.addEventListener('transitionend', function handle() {
         track.removeEventListener('transitionend', handle);
@@ -171,12 +168,10 @@ function initDlaKogoCarousel(items) {
   }
   function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
 
-  // pauza interakcyjna
   mount.addEventListener('mouseenter', stopAuto);
   mount.addEventListener('mouseleave', startAuto);
   mount.addEventListener('touchstart', function(){ stopAuto(); setTimeout(startAuto, 6000); }, { passive:true });
 
-  // rebuild/pozycjonowanie + ponowne wyrównanie przy zmianie rozmiaru
   var rAF = null;
   window.addEventListener('resize', function(){
     if (rAF) cancelAnimationFrame(rAF);
