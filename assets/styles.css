@@ -274,3 +274,21 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
   margin-left: auto;
   margin-right: auto;
 }
+
+/* OFERTA – 4 w 1 rzędzie (desktop), 2×2 na tablet/telefon */
+#ofertaCards.container.row.cols-3{
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 960px){
+  #ofertaCards.container.row.cols-3{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 680px){
+  /* trzymamy 2 kolumny również na telefonach, jak prosisz */
+  #ofertaCards.container.row.cols-3{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
