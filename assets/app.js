@@ -54,7 +54,7 @@ function cardProces(obj) {
     '</article>';
 }
 
-// OFERTA: bez kickera + 3 bullets max (po 1 linijce każdy)
+// OFERTA: bez kickera + max 3 bullets (po 1 linijce każdy); klasy 'of-*' dla stałych wysokości
 function cardOferta(obj) {
   var items = (obj.bullets || []).slice(0, 3).map(function(li){
     return '<li>' + li + '</li>';
@@ -100,6 +100,7 @@ function initDlaKogoCarousel(items) {
   }
 
   function equalizeHeights() {
+    // wyrównanie wysokości kart wewnątrz karuzeli + stała wysokość viewportu
     var cards = track.querySelectorAll('.dk-card .card');
     var maxH = 0;
     for (var i=0; i<cards.length; i++){
@@ -133,8 +134,8 @@ function initDlaKogoCarousel(items) {
     }).join('');
 
     current = 0;
-    jumpTo(current);
-    equalizeHeights();
+    jumpTo(current);      // ustaw start (bez animacji)
+    equalizeHeights();    // wyrównaj wysokości
     startAuto();
   }
 
@@ -143,15 +144,19 @@ function initDlaKogoCarousel(items) {
     var dist = -offsetCards * stepWidth();
     track.style.transition = 'none';
     track.style.transform = 'translateX('+ dist +'px)';
+    // force reflow
     void track.offsetHeight;
     track.style.transition = 'transform .5s ease';
   }
 
+  // RUCH W LEWO (kolejny box)
   function moveLeftByOne() {
     current += 1;
     var offsetCards = current + VISIBLE;
     var dist = -offsetCards * stepWidth();
     track.style.transform = 'translateX('+ dist +'px)';
+
+    // po dojściu do prawego klona — „cichy” skok na realny początek
     if (current >= items.length) {
       track.addEventListener('transitionend', function handle() {
         track.removeEventListener('transitionend', handle);
@@ -168,10 +173,12 @@ function initDlaKogoCarousel(items) {
   }
   function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
 
+  // pauza interakcyjna
   mount.addEventListener('mouseenter', stopAuto);
   mount.addEventListener('mouseleave', startAuto);
   mount.addEventListener('touchstart', function(){ stopAuto(); setTimeout(startAuto, 6000); }, { passive:true });
 
+  // rebuild/pozycjonowanie + ponowne wyrównanie przy zmianie rozmiaru
   var rAF = null;
   window.addEventListener('resize', function(){
     if (rAF) cancelAnimationFrame(rAF);
@@ -182,6 +189,26 @@ function initDlaKogoCarousel(items) {
   });
 
   build();
+}
+
+// === OFERTA: wyrównanie wysokości kart w siatce (identyczny pion) ===
+function equalizeOfertaHeights() {
+  var grid = document.querySelector('#ofertaCards');
+  if (!grid) return;
+  var cards = grid.querySelectorAll('.card');
+  if (!cards.length) return;
+
+  // reset → pomiar max
+  for (var i = 0; i < cards.length; i++) { cards[i].style.height = 'auto'; }
+  var maxH = 0;
+  for (var j = 0; j < cards.length; j++) {
+    var h = cards[j].offsetHeight;
+    if (h > maxH) maxH = h;
+  }
+  // ustaw jednakową wysokość
+  if (maxH > 0) {
+    for (var k = 0; k < cards.length; k++) { cards[k].style.height = maxH + 'px'; }
+  }
 }
 
 // === Load JSON & render ===
@@ -202,6 +229,7 @@ function loadData() {
       var ofertaMount = $('#ofertaCards');
       if (ofertaMount && Array.isArray(data.oferta)) {
         ofertaMount.innerHTML = data.oferta.map(cardOferta).join('');
+        equalizeOfertaHeights(); // wyrównaj wysokość kart „Oferty”
       }
     })
     .catch(function(err){
@@ -210,3 +238,12 @@ function loadData() {
 }
 
 document.addEventListener('DOMContentLoaded', loadData);
+
+// Re-wyrównanie „Oferty” przy resize (debounce przez rAF)
+window.addEventListener('resize', (function(){
+  var rAF = null;
+  return function(){
+    if (rAF) cancelAnimationFrame(rAF);
+    rAF = requestAnimationFrame(equalizeOfertaHeights);
+  };
+})());
