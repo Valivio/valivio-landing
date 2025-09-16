@@ -320,3 +320,60 @@ section[id]{ scroll-margin-top: var(--anchor-offset); }
 
 /* porządek wokół listy – ten sam odstęp we wszystkich kartach */
 #oferta .card ul{ margin-top: 12px; }
+
+/* === OFERTA — układ „na sztywno” (bez kickera) === */
+/* Tytuł = dokładnie 2 linie */
+#oferta .card .of-title{
+  --lh-title: 1.25;
+  line-height: var(--lh-title);
+  min-height: calc(2 * 1em * var(--lh-title));
+  max-height: calc(2 * 1em * var(--lh-title));
+  display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+
+/* 1 linia odstępu między Title a Desc */
+#oferta .card .of-desc{
+  --lh-desc: 1.45;
+  margin-top: calc(1em * var(--lh-desc));
+  line-height: var(--lh-desc);
+  /* Desc = dokładnie 2 linie */
+  min-height: calc(2 * 1em * var(--lh-desc));
+  max-height: calc(2 * 1em * var(--lh-desc));
+  display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 1 linia odstępu między Desc a Bullets */
+/* Bullets = dokładnie 3 wiersze (po 1 linijce każdy) */
+#oferta .card .of-list{
+  --lh-li: 1.45;
+  margin-top: calc(1em * var(--lh-li));
+  padding-left: 18px;          /* zachowujemy wypunktowanie */
+  list-style: disc;
+  line-height: var(--lh-li);
+  min-height: calc(3 * 1em * var(--lh-li));
+  max-height: calc(3 * 1em * var(--lh-li));
+  overflow: hidden;
+}
+#oferta .card .of-list li{
+  white-space: nowrap;         /* jedna linia */
+  overflow: hidden;
+  text-overflow: ellipsis;     /* „…” przy zbyt długich */
+}
+
+/* 1 linia odstępu między Bullets a Price */
+#oferta .card .of-price{
+  --lh-li: 1.45;
+  margin-top: calc(1em * var(--lh-li));
+  text-align: center;          /* jak wcześniej */
+}
+
+/* (Opcjonalnie) wyłącz stare wyrównania kickera, jeśli kiedyś zostały */
+#oferta .card .meta:first-of-type{
+  text-align: inherit;
+  margin: 0;
+}
