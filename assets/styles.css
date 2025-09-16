@@ -262,3 +262,15 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
 #ofertaCards .card .of-title{ margin-left:auto; margin-right:auto; }
 #ofertaCards .card .of-desc{  margin-left:auto; margin-right:auto; }
 #ofertaCards .card .of-price{ margin-left:auto; margin-right:auto; }
+
+/* DLA KOGO – wyśrodkowanie zawartości kart */
+#dla-kogo .card{
+  text-align: center;
+}
+
+/* kosmetyka: pewność, że nagłówek i opis trzymają środek */
+#dla-kogo .card .h3,
+#dla-kogo .card .meta{
+  margin-left: auto;
+  margin-right: auto;
+}
