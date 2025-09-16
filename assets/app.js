@@ -67,37 +67,119 @@ function cardOferta({ kicker, title, desc, bullets = [], price }) {
     </article>`;
 }
 
-// === Karuzela "Dla kogo": 6 kart, 3 widoczne, przesuw o 1 ===
+// === Karuzela "Dla kogo": 6 kart, widoczne 3, przesuw o 1 w poziomie ===
 function initDlaKogoCarousel(items) {
-  const mount = $('#dlaKogoCards');
+  const mount = document.querySelector('#dlaKogoCards');
   if (!mount || !Array.isArray(items) || items.length === 0) return;
 
-  const VISIBLE = 3;
-  let idx = 0;
-  const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+  // zdejmij stare klasy siatki, żeby nie walczyły z karuzelą
+  mount.classList.remove('row', 'cols-3');
 
-  function renderAt(start) {
-    const n = items.length;
-    const count = Math.min(VISIBLE, n);
-    const chunks = [];
-    for (let i = 0; i < count; i++) {
-      chunks.push(cardDlaKogo(items[(start + i) % n]));
-    }
-    mount.innerHTML = chunks.join('');
+  // helpery
+  const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+  const GAP = 24; // musi się zgadzać z --dk-gap w CSS (px)
+
+  let VISIBLE = getVisible();
+  let timer = null;
+  let current = 0;     // index w obrębie "prawdziwych" elementów
+  let track, viewport;
+
+  function getVisible() {
+    const w = window.innerWidth;
+    if (w <= 680) return 1;
+    if (w <= 960) return 2;
+    return 3; // desktop
   }
 
-  // Jeśli kart jest <=3, po prostu renderuj wszystkie i wyjdź.
-  renderAt(0);
-  if (items.length <= VISIBLE || prefersReduced) return;
+  function build() {
+    VISIBLE = getVisible();
 
-  // Auto-przewijanie o 1 co 4 sekundy, pauza na hover/tap
-  let timer = setInterval(() => {
-    idx = (idx + 1) % items.length;
-    renderAt(idx);
-    // krótka klasa do subtelnej animacji (jeśli chcesz efekt)
-    mount.classList.add('dk-fade');
-    setTimeout(() => mount.classList.remove('dk-fade'), 320);
-  }, 4000);
+    // zbuduj strukturę: viewport -> track -> karty (klony + oryginały + klony)
+    mount.innerHTML = `
+      <div class="dk-viewport">
+        <div class="dk-track" style="--dk-visible:${VISIBLE}">
+        </div>
+      </div>
+    `;
+    viewport = mount.querySelector('.dk-viewport');
+    track = mount.querySelector('.dk-track');
+
+    const before = items.slice(-VISIBLE);      // klony na początek
+    const after  = items.slice(0, VISIBLE);    // klony na koniec
+    const full = [...before, ...items, ...after];
+
+    track.innerHTML = full.map(cardDlaKogo).map(html => `<div class="dk-card">${html}</div>`).join('');
+
+    // startujemy od pierwszego realnego elementu (po klonach z lewej)
+    current = 0;
+    jumpTo(current); // bez animacji
+    startAuto();
+  }
+
+  function stepWidth() {
+    const first = track.querySelector('.dk-card');
+    if (!first) return 0;
+    const w = first.getBoundingClientRect().width;
+    return w + GAP; // szerokość karty + odstęp
+  }
+
+  function jumpTo(realIndex) {
+    // realIndex w [0..items.length-1]
+    const offsetCards = realIndex + VISIBLE;   // + klony przed
+    const dist = -offsetCards * stepWidth();
+    track.style.transition = 'none';
+    track.style.transform = `translateX(${dist}px)`;
+    // force reflow
+    void track.offsetHeight;
+    track.style.transition = 'transform .5s ease';
+  }
+
+  function moveRightByOne() {
+    // "od lewej do prawej": przesuwamy widok w PRAWO, czyli pokazujemy poprzednią kartę
+    current = (current - 1 + items.length) % items.length;
+    const offsetCards = current + VISIBLE;
+    const dist = -offsetCards * stepWidth();
+    track.style.transform = `translateX(${dist}px)`;
+
+    // gdy dojedziemy do lewego klona, zresetuj niepostrzeżenie
+    if (current === items.length - 1) {
+      // po zakończonej animacji przeskocz w to samo miejsce w realnej kolejce
+      track.addEventListener('transitionend', handleLoopFix, { once: true });
+    }
+  }
+
+  function handleLoopFix() {
+    // jesteśmy wizualnie na klonie z lewej (ostatni realny item)
+    // przeskocz bez animacji na realny ostatni
+    jumpTo(items.length - 1);
+  }
+
+  function startAuto() {
+    stopAuto();
+    if (items.length <= VISIBLE || prefersReduced) return;
+    timer = setInterval(moveRightByOne, 4000);
+  }
+  function stopAuto(){ if (timer) { clearInterval(timer); timer = null; } }
+
+  // interakcje: pauza na hover / tap
+  mount.addEventListener('mouseenter', stopAuto);
+  mount.addEventListener('mouseleave', startAuto);
+  mount.addEventListener('touchstart', () => { stopAuto(); setTimeout(startAuto, 6000); }, { passive:true });
+
+  // rebuild przy zmianie rozmiaru (debounce)
+  let rAF = null;
+  window.addEventListener('resize', () => {
+    if (rAF) cancelAnimationFrame(rAF);
+    rAF = requestAnimationFrame(() => {
+      const oldV = VISIBLE;
+      const newV = getVisible();
+      if (newV !== oldV) build(); // przebuduj gdy zmienia się liczba widocznych kart
+      else { jumpTo(current); }   // inaczej tylko ustaw pozycję
+    });
+  });
+
+  build();
+}
 
   // Pauza na hover
   mount.addEventListener('mouseenter', () => { clearInterval(timer); });
