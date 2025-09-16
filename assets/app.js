@@ -328,3 +328,23 @@ window.addEventListener('resize', (function(){
 
 // Po pełnym załadowaniu fontów jeszcze raz wyrównaj
 window.addEventListener('load', equalizeOfertaHeights);
+
+// === O MNIE: wczytanie treści z assets/about-content.html (cache-buster, bezpiecznie) ===
+function loadAboutContent() {
+  var mount = document.getElementById('aboutContent');
+  if (!mount) return; // działa tylko na about.html
+
+  var url = '/assets/about-content.html?v=' + Date.now();
+  fetch(url, { cache: 'no-store' })
+    .then(function(res){ if(!res.ok) throw new Error('HTTP ' + res.status); return res.text(); })
+    .then(function(html){
+      mount.innerHTML = html;
+    })
+    .catch(function(err){
+      console.error('About content load error:', err.message);
+      mount.innerHTML = '<div class="container"><div class="card"><p class="muted">Nie udało się wczytać treści. Spróbuj odświeżyć stronę.</p></div></div>';
+    });
+}
+
+// uruchom razem z resztą po DOMContentLoaded
+document.addEventListener('DOMContentLoaded', loadAboutContent);
