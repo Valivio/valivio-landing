@@ -53,20 +53,30 @@ function cardProces(obj) {
       '<p class="meta">' + obj.text + '</p>' +
     '</article>';
 }
-
-// OFERTA: bez kickera + max 3 bullets (po 1 linijce każdy); klasy 'of-*' dla stałych wysokości
+// OFERTA: bez "kicker" + max 3 bullets (po 1 linijce); klasy of-* dla stałych wysokości
 function cardOferta(obj) {
   var items = (obj.bullets || []).slice(0, 3).map(function(li){
     return '<li>' + li + '</li>';
   }).join('');
   return '' +
     '<article class="card">' +
-      '<h3 class="h3 of-title">' + obj.title + '</h3>' +              // Title (2 linie)
-      '<p class="meta of-desc">' + obj.desc + '</p>' +                 // Desc (2 linie)
-      '<ul class="mt-12 of-list">' + items + '</ul>' +                 // Bullets (3 wiersze)
+      '<h3 class="h3 of-title">' + obj.title + '</h3>' +              // Title (1–2 linie, pole = 2 linie)
+      '<p class="meta of-desc">' + obj.desc + '</p>' +                 // Desc (dokładnie 2 linie)
+      '<ul class="mt-12 of-list">' + items + '</ul>' +                 // Bullets (dokładnie 3 wiersze)
       '<p class="price mt-16 of-price">' + obj.price + '</p>' +        // Price (1 linia)
       '<a class="btn" href="#kontakt">Umów sesję</a>' +
     '</article>';
+}
+// FAQ: pojedyncza pozycja
+function itemFaq(obj) {
+  var q = (obj && obj.q) ? obj.q : '';
+  var a = (obj && obj.a) ? obj.a : '';
+  var aHtml = String(a).replace(/\n/g, '<br>');
+  return '' +
+    '<details>' +
+      '<summary>' + q + '</summary>' +
+      '<p>' + aHtml + '</p>' +
+    '</details>';
 }
 
 // === Karuzela „Dla kogo” — poziomy autoscroll: 3 widoczne, przesuw o 1 W LEWO ===
@@ -231,6 +241,18 @@ function loadData() {
         ofertaMount.innerHTML = data.oferta.map(cardOferta).join('');
         equalizeOfertaHeights(); // wyrównaj wysokość kart „Oferty”
       }
+
+      // FAQ (z osobnego pliku)
+      var faqMount = document.querySelector('#faqList');
+      if (faqMount) {
+        fetch('/assets/faq.json', { cache: 'no-cache' })
+          .then(function(res){ if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); })
+          .then(function(faq){
+            var items = (faq && Array.isArray(faq.items)) ? faq.items : [];
+            faqMount.innerHTML = items.map(itemFaq).join('');
+          })
+          .catch(function(err){ console.error('FAQ JSON error:', err); });
+      }
     })
     .catch(function(err){
       console.error('Nie udało się wczytać /assets/data.json:', err);
@@ -247,3 +269,6 @@ window.addEventListener('resize', (function(){
     rAF = requestAnimationFrame(equalizeOfertaHeights);
   };
 })());
+
+// (opcjonalnie) po pełnym załadowaniu fontów jeszcze raz wyrównaj
+window.addEventListener('load', equalizeOfertaHeights);
