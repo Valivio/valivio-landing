@@ -317,3 +317,11 @@ footer{border-top:1px solid var(--border); padding:40px 0 64px}
     max-width: 896px; /* było 1120px */
   }
 }
+
+/* OFERTA — telefony: jedna kolumna (stack) */
+@media (max-width: 680px){
+  #ofertaCards.container.row.cols-3{
+    grid-template-columns: 1fr !important; /* nadpisuje 2×2 */
+    gap: 20px;                              /* odrobina oddechu między boksami */
+  }
+}
