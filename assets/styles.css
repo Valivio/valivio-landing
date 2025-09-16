@@ -1,11 +1,21 @@
+/* ==============
+   TOK VALIVIO – CLEAN CSS
+   ============== */
+
+/* Variables */
 :root{
   --bg:#fff; --paper:#fff; --text:#111; --muted:#555; --link:#06c; --border:#e6e6e6;
   --radius:14px; --maxw:980px;
-  --blue-rgb:245,249,255;  /* #f5f9ff */
-  --warm-rgb:255,247,240;  /* #fff7f0 */
-  --accent:#34c759; --accent-ink:#fff; /* zielony akcent */
-}
+  --blue-rgb:245,249,255;      /* #f5f9ff */
+  --warm-rgb:255,247,240;      /* #fff7f0 */
+  --accent:#34c759;            /* zielony akcent */
+  --accent-ink:#fff;
 
+  --anchor-offset:84px;        /* offset pod sticky header */
+}
+@media (max-width:720px){ :root{ --anchor-offset:120px; } }
+
+/* Base */
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
@@ -14,23 +24,26 @@ body{
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
 }
 img{max-width:100%; display:block}
-a{color:var(--link); text-decoration:none} a:hover{text-decoration:underline}
+a{color:var(--link); text-decoration:none}
+a:hover{text-decoration:underline}
+section[id]{ scroll-margin-top: var(--anchor-offset); }
 
 /* Layout */
 .container{max-width:var(--maxw); margin-inline:auto; padding-inline:20px}
 .row{display:grid; gap:24px}
 .row.cols-3{grid-template-columns:repeat(3,1fr)}
 .row.cols-2{grid-template-columns:repeat(2,1fr)}
-@media (max-width:960px){.row.cols-3{grid-template-columns:1fr 1fr}}
-@media (max-width:680px){.row.cols-3,.row.cols-2{grid-template-columns:1fr}}
+@media (max-width:960px){ .row.cols-3{grid-template-columns:1fr 1fr} }
+@media (max-width:680px){ .row.cols-3,.row.cols-2{grid-template-columns:1fr} }
 
+/* Type scale */
 .h1{font-size:clamp(36px,5vw,56px); line-height:1.1; letter-spacing:-.02em; margin:0}
 .h2{font-size:clamp(28px,3.5vw,36px); line-height:1.15; letter-spacing:-.01em; margin:0}
 .h3{font-size:clamp(20px,2.2vw,22px); line-height:1.25; margin:0}
 .eyebrow{font-size:14px; letter-spacing:.08em; text-transform:uppercase; color:#6b7280}
 .lead{font-size:clamp(16px,1.6vw,20px); color:#333; max-width:70ch}
 
-/* NAV */
+/* Navigation */
 header{position:sticky; top:0; z-index:10; background:rgba(255,255,255,.85); backdrop-filter:saturate(140%) blur(8px)}
 .nav{display:flex; gap:12px; align-items:center; justify-content:space-between; padding:14px 0; flex-wrap:nowrap}
 .brand{display:flex; align-items:center; gap:10px; font-weight:700; font-size:1.2rem}
@@ -48,15 +61,19 @@ header{position:sticky; top:0; z-index:10; background:rgba(255,255,255,.85); bac
 @media (max-width:720px){
   .nav{flex-wrap:wrap; align-items:flex-start}
   .brand{order:1} .navcta{order:2; margin-left:auto}
-  .navlinks{order:3; width:100%; max-width:100%; padding-top:8px; border-top:1px solid var(--border)}
+  .navlinks{
+    order:3; width:100%; max-width:100%; padding-top:8px; border-top:1px solid var(--border);
+    justify-content:center; flex-wrap:wrap; gap:16px 20px; overflow-x:visible; white-space:normal; text-align:center;
+  }
+  .navlinks a{ flex:0 0 auto; }
 }
 
-/* SECTIONS */
+/* Sections */
 section{padding:56px 0}
 .section-head{display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px; margin-bottom:28px}
 .section-head p{max-width:68ch; color:var(--muted)}
 
-/* Tła sekcyjne – fade: biel -> kolor (środek) -> biel, lekko mocniejsze (~+5%) */
+/* Section tints (biel → kolor → biel) */
 .tint-blue{
   background:
     radial-gradient(120% 90% at 50% 45%, rgba(var(--blue-rgb),.37) 0%, rgba(var(--blue-rgb),.16) 55%, rgba(var(--blue-rgb),0) 100%),
@@ -68,11 +85,10 @@ section{padding:56px 0}
     linear-gradient(180deg, #fff 0%, rgba(var(--warm-rgb),.63) 22%, rgba(var(--warm-rgb),.90) 50%, rgba(var(--warm-rgb),.63) 78%, #fff 100%);
 }
 
-/* HERO z obrazem (full-bleed) */
+/* Hero (full-bleed image) */
 .hero-bleed{position:relative; isolation:isolate; min-height:clamp(320px,45vh,520px)}
 .hero-bleed .hero-img{
-  position:absolute; inset:0; z-index:0; width:100%; height:100%;
-  object-fit:cover; object-position:50% 40%;
+  position:absolute; inset:0; z-index:0; width:100%; height:100%; object-fit:cover; object-position:50% 40%;
 }
 .hero-bleed::after{
   content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
@@ -81,13 +97,10 @@ section{padding:56px 0}
 .hero-bleed .hero-content{
   position:absolute; inset:0; z-index:2; display:grid; place-content:center; padding-top:56px; text-align:center;
 }
-/* Kolor tekstu w hero ~93% czerni */
 .hero-bleed .eyebrow,
 .hero-bleed .hero-title,
 .hero-bleed .hero-lead,
 .hero-bleed .hero-lead strong{color:rgba(0,0,0,.93)}
-
-/* HERO typografia */
 .hero{padding:72px 0 28px}
 .hero .cta{display:flex; gap:12px; flex-wrap:wrap; margin-top:24px}
 .hero-title{max-width:28ch; margin:0 auto; letter-spacing:-.02em; text-align:center}
@@ -95,7 +108,7 @@ section{padding:56px 0}
 .hero-lead{max-width:62ch; margin:16px auto 0; text-align:center}
 @media (max-width:420px){ .hero-title{max-width:22ch} .hero-lead{max-width:66vw} }
 
-/* KOMPONENTY */
+/* Components */
 .btn{display:inline-flex; align-items:center; gap:.6rem; border-radius:999px; padding:.9rem 1.15rem; font-weight:700; border:1px solid #000; background:#000; color:#fff}
 .btn:hover{opacity:.9; text-decoration:none}
 .btn.ghost{background:#fff; color:#111; border-color:#000}
@@ -109,7 +122,7 @@ details{border:1px solid var(--border); border-radius:12px; padding:14px 16px}
 details+details{margin-top:10px}
 summary{cursor:pointer; font-weight:700}
 
-/* FORM */
+/* Forms */
 form.card label{display:block; margin-top:8px}
 input,textarea{
   width:100%; padding:12px; border-radius:12px; background:#fff; border:1px solid var(--border); color:var(--text);
@@ -118,336 +131,84 @@ input,textarea{
 input:focus,textarea:focus{outline:2px solid #0003; border-color:#000}
 .form-row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
 
-/* FOOTER */
+/* Footer */
 footer{border-top:1px solid var(--border); padding:40px 0 64px}
 .fine{color:#666; font-size:.95rem}
 
-/* OFERTA – spójne karty + wyśrodkowane kicker i cena + równy start listy */
-#oferta .row.cols-3{align-items:stretch}
-#oferta .card{display:flex; flex-direction:column}
-#oferta .card .h3{ --lines:2; line-height:1.25; min-height:calc(var(--lines)*1em*1.25); margin-top:2px }
-@media (max-width:680px){ #oferta .card .h3{ --lines:3 } }
-#oferta .card .meta:first-of-type{display:block; text-align:center; margin-bottom:8px}
-#oferta .card .price{text-align:center; margin-top:16px}
-#oferta .card .meta:nth-of-type(2){ --lines:2; line-height:1.45; min-height:calc(var(--lines)*1em*1.45); margin-top:6px }
-@media (max-width:680px){ #oferta .card .meta:nth-of-type(2){ --lines:3 } }
-#oferta .card ul{margin-top:12px}
-#oferta .card .btn{
-  background:var(--accent); border-color:var(--accent); color:var(--accent-ink);
-  display:inline-flex; align-self:center; margin-top:12px
-}
-#oferta .card .btn:hover{filter:saturate(110%)}
-
-/* HELPERS */
-.muted{color:var(--muted)}
-.mt-8{margin-top:8px} .mt-12{margin-top:12px} .mt-16{margin-top:16px} .mt-20{margin-top:20px} .mt-28{margin-top:28px} .mt-36{margin-top:36px}
-.center{text-align:center}
-
-/* MOBILE: wyśrodkuj główne menu pod logo */
-@media (max-width: 720px){
-  .navlinks{
-    width:100%;
-    max-width:100%;
-    justify-content: center;   /* środek! */
-    flex-wrap: wrap;           /* łamie wiersz zamiast scrolla */
-    gap: 16px 20px;            /* pion × poziom */
-    overflow-x: visible;       /* bez poziomego przewijania */
-    white-space: normal;       /* pozwól się łamać */
-    text-align: center;
-  }
-  .navlinks a{ flex: 0 0 auto; } /* stabilne odstępy między linkami */
-}
-
-/* DLA KOGO: h3 = dokładnie 2 linie + 1 linia przerwy, opis startuje równo */
-#dla-kogo .card{
-  display:flex;
-  flex-direction:column;
-}
-
-#dla-kogo .card .h3{
-  /* 2 linie wysokości, z przycięciem jeśli dłuższe */
-  --lh: 1.25;
-  line-height: var(--lh);
-  min-height: calc(2 * 1em * var(--lh));
-  max-height: calc(2 * 1em * var(--lh));
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin: 0; /* reset */
-}
-
-/* 1 linia odstępu pod nagłówkiem */
-#dla-kogo .card .meta{
-  margin-top: calc(1em * 1.25); /* = 1 linia wysokości nagłówka */
-}
-
-/* Anchor offset pod sticky header – pełna widoczność tytułów sekcji */
-:root{ --anchor-offset: 84px; }          /* desktop/tablet */
-@media (max-width: 720px){
-  :root{ --anchor-offset: 120px; }       /* mobile – header zwykle wyższy */
-}
-section[id]{ scroll-margin-top: var(--anchor-offset); }
-
-/* Dla kogo – subtelny efekt przy przewinięciu (fade+slide) */
-#dlaKogoCards{ transition: opacity .28s ease, transform .28s ease; }
-#dlaKogoCards.dk-fade{ opacity:.0; transform: translateY(6px); }
-
-/* === DLA KOGO – slider poziomy 3-widocznych, przesuw o 1 === */
-:root{ --dk-gap:24px; }
-
-#dlaKogoCards .dk-viewport{
-  overflow:hidden;
-}
-
-#dlaKogoCards .dk-track{
-  display:flex;
-  gap:var(--dk-gap);
-  will-change: transform;
-  transition: transform .5s ease;
-  padding: 0 2px; /* minimalny oddech, żeby cięcie nie dotykało cienia kart */
-}
-
-/* szerokość pojedynczej karty zależnie od ilości widocznych */
-#dlaKogoCards .dk-card{
-  flex:0 0 calc( (100% - (var(--dk-visible) - 1) * var(--dk-gap)) / var(--dk-visible) );
-}
-
-/* responsywność: 3 → 2 → 1 */
-@media (max-width:960px){
-  #dlaKogoCards .dk-track{ --dk-visible:2; }
-}
-@media (max-width:680px){
-  #dlaKogoCards .dk-track{ --dk-visible:1; }
-}
-
-/* Zachowujemy Twoje formatowanie tytułu/odstępów w kartach */
-#dla-kogo .card .h3{
-  --lh:1.25;
-  line-height:var(--lh);
-  min-height:calc(2 * 1em * var(--lh));
-  max-height:calc(2 * 1em * var(--lh));
-  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0;
-}
-#dla-kogo .card .meta{ margin-top:calc(1em * 1.25); }
-
-/* === DLA KOGO – slider poziomy 3-widocznych, przesuw o 1 === */
+/* =========================
+   DLA KOGO – slider poziomy
+   ========================= */
 :root{ --dk-gap:24px; }
 
 #dlaKogoCards .dk-viewport{ overflow:hidden; }
 #dlaKogoCards .dk-track{
-  display:flex;
-  gap:var(--dk-gap);
-  will-change: transform;
-  transition: transform .5s ease;
-  padding: 0 2px;
+  display:flex; gap:var(--dk-gap);
+  will-change:transform; transition:transform .5s ease;
+  padding:0 2px; align-items:stretch;
 }
-#dlaKogoCards .dk-card{
-  flex:0 0 calc( (100% - (var(--dk-visible) - 1) * var(--dk-gap)) / var(--dk-visible) );
-}
+#dlaKogoCards .dk-card{ flex:0 0 calc((100% - (var(--dk-visible) - 1) * var(--dk-gap)) / var(--dk-visible)); display:flex; }
+#dlaKogoCards .dk-card .card{ display:flex; flex-direction:column; height:100%; }
 
-/* responsywność (3→2→1 widoczne) */
+/* responsywność (3→2→1 widoczne) – sterowane JS przez --dk-visible,
+   ale awaryjnie ustawiamy breakpointy */
 @media (max-width:960px){ #dlaKogoCards .dk-track{ --dk-visible:2; } }
 @media (max-width:680px){ #dlaKogoCards .dk-track{ --dk-visible:1; } }
 
-/* Wasze wyrównania dla nagłówków kart „Dla kogo” (2 linie + 1 linia przerwy) */
+/* Wyrównanie tytułu/opisu w kartach „Dla kogo” (2 linie tytułu + 1 linia przerwy) */
 #dla-kogo .card .h3{
-  --lh:1.25;
-  line-height:var(--lh);
-  min-height:calc(2 * 1em * var(--lh));
-  max-height:calc(2 * 1em * var(--lh));
+  --lh:1.25; line-height:var(--lh);
+  min-height:calc(2 * 1em * var(--lh)); max-height:calc(2 * 1em * var(--lh));
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0;
 }
 #dla-kogo .card .meta{ margin-top:calc(1em * 1.25); }
 
-/* === DLA KOGO – równanie wysokości kart w sliderze === */
-#dlaKogoCards .dk-track{
-  align-items: stretch;               /* wyrównuje wysokość flex items w wierszu */
-}
-#dlaKogoCards .dk-card{
-  display: flex;                      /* pozwala rozciągnąć .card do 100% */
-}
-#dlaKogoCards .dk-card .card{
-  display: flex; flex-direction: column; height: 100%;
-}
+/* =========================
+   OFERTA – równe karty i stałe pola
+   ========================= */
 
-/* === JAK PRACUJĘ / OFERTA – równe wysokości w siatkach === */
-#procesCards .card,
-#ofertaCards .card{
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* OFERTA: tytuł i opis = DOKŁADNIE 2 linie (mobile 3) → lista startuje równo */
-#oferta .card .h3{
-  --lh: 1.25;
-  line-height: var(--lh);
-  min-height: calc(2 * 1em * var(--lh));
-  max-height: calc(2 * 1em * var(--lh));
-  display: -webkit-box;
-  -webkit-line-clamp: 2;           /* eleganckie „…” w Chrome/Safari */
-  -webkit-box-orient: vertical;
-  overflow: hidden;                 /* Firefox: bez „…”, ale wysokość stała */
-  margin-top: 2px;
-}
-
-#oferta .card .meta:nth-of-type(2){
-  --lh: 1.45;
-  line-height: var(--lh);
-  min-height: calc(2 * 1em * var(--lh));
-  max-height: calc(2 * 1em * var(--lh));
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-top: 6px;
-}
-
-/* Mobile: pozwól na 3 linie – mniejsze szerokości częściej łamią tekst */
-@media (max-width: 680px){
-  #oferta .card .h3{
-    min-height: calc(3 * 1em * 1.25);
-    max-height: calc(3 * 1em * 1.25);
-    -webkit-line-clamp: 3;
-  }
-  #oferta .card .meta:nth-of-type(2){
-    min-height: calc(3 * 1em * 1.45);
-    max-height: calc(3 * 1em * 1.45);
-    -webkit-line-clamp: 3;
-  }
-}
-
-/* porządek wokół listy – ten sam odstęp we wszystkich kartach */
-#oferta .card ul{ margin-top: 12px; }
-
-/* === OFERTA — układ „na sztywno” (bez kickera) === */
-/* Tytuł = dokładnie 2 linie */
-#oferta .card .of-title{
-  --lh-title: 1.25;
-  line-height: var(--lh-title);
-  min-height: calc(2 * 1em * var(--lh-title));
-  max-height: calc(2 * 1em * var(--lh-title));
-  display: -webkit-box;
-  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin: 0;
-}
-
-/* 1 linia odstępu między Title a Desc */
-#oferta .card .of-desc{
-  --lh-desc: 1.45;
-  margin-top: calc(1em * var(--lh-desc));
-  line-height: var(--lh-desc);
-  /* Desc = dokładnie 2 linie */
-  min-height: calc(2 * 1em * var(--lh-desc));
-  max-height: calc(2 * 1em * var(--lh-desc));
-  display: -webkit-box;
-  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* 1 linia odstępu między Desc a Bullets */
-/* Bullets = dokładnie 3 wiersze (po 1 linijce każdy) */
-#oferta .card .of-list{
-  --lh-li: 1.45;
-  margin-top: calc(1em * var(--lh-li));
-  padding-left: 18px;          /* zachowujemy wypunktowanie */
-  list-style: disc;
-  line-height: var(--lh-li);
-  min-height: calc(3 * 1em * var(--lh-li));
-  max-height: calc(3 * 1em * var(--lh-li));
-  overflow: hidden;
-}
-#oferta .card .of-list li{
-  white-space: nowrap;         /* jedna linia */
-  overflow: hidden;
-  text-overflow: ellipsis;     /* „…” przy zbyt długich */
-}
-
-/* 1 linia odstępu między Bullets a Price */
-#oferta .card .of-price{
-  --lh-li: 1.45;
-  margin-top: calc(1em * var(--lh-li));
-  text-align: center;          /* jak wcześniej */
-}
-
-/* (Opcjonalnie) wyłącz stare wyrównania kickera, jeśli kiedyś zostały */
-#oferta .card .meta:first-of-type{
-  text-align: inherit;
-  margin: 0;
-}
-
-/* OFERTA: identyczna szerokość kolumn + karty rozciągają się w pionie */
+/* Siatka: równe kolumny, karty rozciągają się na pełną wysokość */
 #ofertaCards.container.row.cols-3{
-  grid-template-columns: repeat(3, 1fr); /* równo co do piksela */
-  align-items: stretch;                   /* wszystkie karty tej samej wysokości w wierszu */
-  grid-auto-rows: 1fr;                    /* każdy kolejny wiersz też równy */
+  grid-template-columns:repeat(3,1fr);
+  align-items:stretch;
+  grid-auto-rows:1fr;
 }
+#ofertaCards .card{ display:flex; flex-direction:column; height:100%; overflow:hidden; word-break:break-word; }
+#ofertaCards .btn{ margin-top:auto; align-self:center; } /* przycisk przy dolnej krawędzi */
 
-#ofertaCards .card{
-  display: flex;
-  flex-direction: column;
-  height: 100%;            /* rozciągnięcie karty */
-  overflow: hidden;        /* pewność, że nic nie „pcha” szerokości */
-  word-break: break-word;  /* awaryjnie przy bardzo długich słowach */
-}
-
-/* (opcjonalnie) przycisk zawsze przy dole karty – ładna linia końcowa */
-#ofertaCards .btn{ margin-top: auto; align-self: center; }
-
-/* === OFERTA — stałe „pola” i odstępy: Title(1–2) + 1 linia + Desc(2) + 1 linia + Bullets(3) + 1 linia + Price(1) === */
-
-/* Title: dopuszczamy 1–2 linie, ale obszar ma wysokość 2 linii
-   → dzięki temu Desc zawsze zaczyna się z tej samej wysokości.
-   Odstęp 1 linia realizujemy marginem na .of-desc. */
+/* Title (1–2 linie) → zawsze 1 linia przerwy → Desc (dokładnie 2 linie) */
 #oferta .card .of-title{
-  --lh-title: 1.25;
-  line-height: var(--lh-title);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;            /* max 2 linie */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: calc(2 * 1em * var(--lh-title));
-  max-height: calc(2 * 1em * var(--lh-title));
-  margin: 0;
+  --lh-title:1.25; line-height:var(--lh-title);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  min-height:calc(2 * 1em * var(--lh-title)); max-height:calc(2 * 1em * var(--lh-title));
+  margin:0;
 }
-
-/* Zawsze 1 linia przerwy między Title a Desc + Desc dokładnie 2 linie */
 #oferta .card .of-desc{
-  --lh-desc: 1.45;
-  margin-top: calc(1em * var(--lh-desc));  /* = 1 linia odstępu, zawsze */
-  line-height: var(--lh-desc);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;                   /* dokładnie 2 linie */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: calc(2 * 1em * var(--lh-desc));
-  max-height: calc(2 * 1em * var(--lh-desc));
+  --lh-desc:1.45; line-height:var(--lh-desc);
+  margin-top:calc(1em * var(--lh-desc));               /* 1 linia przerwy */
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  min-height:calc(2 * 1em * var(--lh-desc)); max-height:calc(2 * 1em * var(--lh-desc));
 }
 
-/* Zawsze 1 linia przerwy między Desc a Bullets
-   Bullets: 3 wiersze, każdy zaczyna się od kropki i mieści się w 1 linii */
+/* 1 linia przerwy → Bullets (dokładnie 3 wiersze, każdy z kropką, 1 linia) */
 #oferta .card .of-list{
-  --lh-li: 1.45;
-  margin-top: calc(1em * var(--lh-li));    /* 1 linia odstępu */
-  list-style-type: disc;
-  list-style-position: outside;
-  padding-left: 18px;                       /* miejsce na kropkę */
-  line-height: var(--lh-li);
-  min-height: calc(3 * 1em * var(--lh-li));
-  max-height: calc(3 * 1em * var(--lh-li));
-  overflow: hidden;
+  --lh-li:1.45; line-height:var(--lh-li);
+  margin-top:calc(1em * var(--lh-li));
+  list-style-type:disc; list-style-position:outside; padding-left:18px;
+  min-height:calc(3 * 1em * var(--lh-li)); max-height:calc(3 * 1em * var(--lh-li));
+  overflow:hidden;
 }
-#oferta .card .of-list li{
-  white-space: nowrap;                      /* jedna linia */
-  overflow: hidden;
-  text-overflow: ellipsis;                  /* „…” gdy zbyt długie */
+#oferta .card .of-list li{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* 1 linia przerwy → Price (1 linia, wyśrodkowana) */
+#oferta .card .of-price{
+  --lh-li:1.45; margin-top:calc(1em * var(--lh-li));
+  text-align:center;
 }
 
-/* 1 linia przerwy między Bullets a Price + Price w 1 linii */
-#oferta .card .of-price{
-  --lh-li: 1.45;
-  margin-top: calc(1em * var(--lh-li));
-  text-align: center;
-}
+/* =========================
+   Helpers
+   ========================= */
+.muted{color:var(--muted)}
+.mt-8{margin-top:8px} .mt-12{margin-top:12px} .mt-16{margin-top:16px}
+.mt-20{margin-top:20px} .mt-28{margin-top:28px} .mt-36{margin-top:36px}
+.center{text-align:center}
